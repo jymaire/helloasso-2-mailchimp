@@ -1,17 +1,18 @@
 package gui;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import process.CSVprocessing;
+
 import javax.swing.*;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
-
+@Component
 public class MainWindow {
+    private CSVprocessing csVprocessing;
 
     public MainWindow() {
+        this.csVprocessing = new CSVprocessing();
     }
 
     public void drawWindow() {
@@ -37,6 +38,9 @@ public class MainWindow {
 
         mainWindow.setContentPane(basePanel);
         mainWindow.setVisible(true);
+
+        //here only for test purposes
+        csVprocessing.createCSVfile();
     }
 
     private void jButtonImportExcelToJtableActionPerformed(java.awt.event.ActionEvent evt) {
