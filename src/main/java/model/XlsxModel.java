@@ -150,4 +150,18 @@ public class XlsxModel {
             return xlsxModel;
         }
     }
+
+    @Override
+    public String toString() {
+        return "XlsxModel{" +
+                "date=" + date +
+                ", email='" + email + '\'' +
+                ", nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                ", status='" + status + '\'' +
+                ", tarif='" + tarif + '\'' +
+                ", codePostal='" + codePostal + '\'' +
+                ", entrpriseProjet='" + entrpriseProjet + '\'' +
+                '}';
+    }
 }

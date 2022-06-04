@@ -1,26 +1,39 @@
 package process;
 
 import model.XlsxModel;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.swing.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class XlsxService {
+    Logger logger = Logger.getLogger("csv");
 
     public List<XlsxModel> readXlss(String path) {
         List<XlsxModel> xlsxData = new ArrayList<>();
 
+        File file = new File(path);
+        String filePath = file.getAbsolutePath();
+        File xlFile = new File(filePath);
+        if(!xlFile.exists() || xlFile.isDirectory()){
+            JPopupMenu erreur = new JPopupMenu();
+            erreur.add(new JMenuItem("Le fichier n'existe pas"));
+            erreur.setVisible(true);
+            return new ArrayList<>();
+        }
+
+
         try (InputStream inp = new FileInputStream(path)) {
-            Workbook wb = WorkbookFactory.create(inp);
+            XSSFWorkbook wb = new XSSFWorkbook(inp);
             Sheet sheet = wb.getSheetAt(0);
             boolean firstRow = true;
             for (Row row : sheet) {
-                if (firstRow){
+                if (firstRow) {
                     firstRow = false;
                 } else {
                     XlsxModel currentLine = new XlsxModel();
@@ -41,13 +54,18 @@ public class XlsxService {
                     Cell entrepriseProjet = row.getCell(9);
                     currentLine.setEntrpriseProjet(entrepriseProjet.getStringCellValue());
                     xlsxData.add(currentLine);
-
+                    logger.info(currentLine.toString());
                 }
             }
-
         } catch (FileNotFoundException e) {
+            JPopupMenu menu3 = new JPopupMenu();
+            menu3.add(new JMenuItem(e.getMessage()));
+            menu3.setVisible(true);
             throw new RuntimeException(e);
         } catch (IOException e) {
+            JPopupMenu menu3 = new JPopupMenu();
+            menu3.add(new JMenuItem(e.getMessage()));
+            menu3.setVisible(true);
             throw new RuntimeException(e);
         }
         return xlsxData;

@@ -36,7 +36,17 @@ public class MainWindow {
 
         importButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonImportExcelToJtableActionPerformed(evt);
+                String retour = jButtonImportExcelToJtableActionPerformed(evt);
+                basePanel.add(importButton);
+
+                JLabel retourLabel = new JLabel();
+                retourLabel.setText(retour);
+                retourLabel.setVisible(true);
+                basePanel.add(retourLabel);
+                mainWindow.setContentPane(basePanel);
+
+                mainWindow.repaint();
+                mainWindow.revalidate();
             }
         });
         basePanel.add(importButton);
@@ -45,14 +55,14 @@ public class MainWindow {
         mainWindow.setVisible(true);
     }
 
-    private void jButtonImportExcelToJtableActionPerformed(java.awt.event.ActionEvent evt) {
+    private String jButtonImportExcelToJtableActionPerformed(java.awt.event.ActionEvent evt) {
         JFileChooser excelFileChooser = new JFileChooser(System.getProperty("user.dir"));
         excelFileChooser.setDialogTitle("Choix du fichier Hello Asso");
         int excelChooser = excelFileChooser.showOpenDialog(null);
         if (excelChooser == JFileChooser.APPROVE_OPTION) {
             File selectedFile = excelFileChooser.getSelectedFile();
-            System.out.println(selectedFile.getAbsolutePath());
-            convertService.convertHelloAssoXlsxToCsvMailchimp(selectedFile.getAbsolutePath());
+            return convertService.convertHelloAssoXlsxToCsvMailchimp(selectedFile.getAbsolutePath(), selectedFile.getParent());
         }
+        return "une erreur d'est produite";
     }
 }

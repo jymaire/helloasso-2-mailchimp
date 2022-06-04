@@ -3,6 +3,7 @@ package process;
 import model.CsvMailChimpModel;
 import model.XlsxModel;
 
+import javax.swing.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +19,11 @@ public class ConvertService {
         this.csVprocessing = new CSVprocessing();
     }
 
-    public void convertHelloAssoXlsxToCsvMailchimp(String path) {
+    public String convertHelloAssoXlsxToCsvMailchimp(String path,String outputPath) {
         List<XlsxModel> xlsxModels = xlsxService.readXlss(path);
         List<CsvMailChimpModel> csvMailChimpModels = new ArrayList<>();
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
         for (XlsxModel xlsxModel : xlsxModels) {
             if ("Validé".equals(xlsxModel.getStatus())) {
                 CsvMailChimpModel csvMailChimpModel = new CsvMailChimpModel();
@@ -38,7 +40,7 @@ public class ConvertService {
             }
 
         }
-        csVprocessing.createCSVfile(csvMailChimpModels);
-
+        csVprocessing.createCSVfile(csvMailChimpModels,outputPath);
+        return "fini sans exception, fichier créé dans " + outputPath;
     }
 }

@@ -89,4 +89,19 @@ public class CsvMailChimpModel {
     public void setEntrepriseProjet(String entrepriseProjet) {
         this.entrepriseProjet = entrepriseProjet;
     }
+
+    @Override
+    public String toString() {
+        return "CsvMailChimpModel{" +
+                "formule='" + formule + '\'' +
+                ", moyenDePaiement='" + moyenDePaiement + '\'' +
+                ", nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                ", societe='" + societe + '\'' +
+                ", date='" + date + '\'' +
+                ", email='" + email + '\'' +
+                ", codePostal='" + codePostal + '\'' +
+                ", entrepriseProjet='" + entrepriseProjet + '\'' +
+                '}';
+    }
 }
