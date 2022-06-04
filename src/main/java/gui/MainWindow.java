@@ -3,16 +3,22 @@ package gui;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import process.CSVprocessing;
+import process.ConvertService;
+import process.XlsxService;
 
 import javax.swing.*;
+
+import java.io.File;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 @Component
 public class MainWindow {
     private CSVprocessing csVprocessing;
+    private ConvertService convertService;
 
     public MainWindow() {
         this.csVprocessing = new CSVprocessing();
+        this.convertService = new ConvertService();
     }
 
     public void drawWindow() {
@@ -35,18 +41,18 @@ public class MainWindow {
         });
         basePanel.add(importButton);
 
-
         mainWindow.setContentPane(basePanel);
         mainWindow.setVisible(true);
-
-        //here only for test purposes
-        csVprocessing.createCSVfile();
     }
 
     private void jButtonImportExcelToJtableActionPerformed(java.awt.event.ActionEvent evt) {
         JFileChooser excelFileChooser = new JFileChooser(System.getProperty("user.dir"));
         excelFileChooser.setDialogTitle("Choix du fichier Hello Asso");
         int excelChooser = excelFileChooser.showOpenDialog(null);
-
+        if (excelChooser == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = excelFileChooser.getSelectedFile();
+            System.out.println(selectedFile.getAbsolutePath());
+            convertService.convertHelloAssoXlsxToCsvMailchimp(selectedFile.getAbsolutePath());
+        }
     }
 }
