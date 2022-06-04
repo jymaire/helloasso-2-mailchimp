@@ -1,9 +1,9 @@
-package process;
+package app.process;
 
 import com.opencsv.CSVWriter;
 import com.opencsv.CSVWriterBuilder;
 import com.opencsv.ICSVWriter;
-import model.CsvMailChimpModel;
+import app.model.CsvMailChimpModel;
 
 import java.io.File;
 import java.io.FileWriter;

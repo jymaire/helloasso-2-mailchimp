@@ -1,9 +1,8 @@
-package process;
+package app.process;
 
-import model.CsvMailChimpModel;
-import model.XlsxModel;
+import app.model.CsvMailChimpModel;
+import app.model.XlsxModel;
 
-import javax.swing.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;

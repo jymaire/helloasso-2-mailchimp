@@ -1,10 +1,8 @@
 package app;
 
-import gui.MainWindow;
-import org.springframework.beans.factory.annotation.Autowired;
+import app.gui.MainWindow;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import process.CSVprocessing;
 
 @SpringBootApplication
 public class Application {

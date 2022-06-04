@@ -1,6 +1,5 @@
-package model;
+package app.model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class XlsxModel {
