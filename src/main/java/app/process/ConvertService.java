@@ -18,11 +18,16 @@ public class ConvertService {
         this.csVprocessing = new CSVprocessing();
     }
 
-    public String convertHelloAssoXlsxToCsvMailchimp(String path,String outputPath) {
-        List<XlsxModel> xlsxModels = xlsxService.readXlss(path);
+    public String readAndConvertHelloAssoXlsxToCsvMailchimp(String path, String outputPath) {
+        List<XlsxModel> xlsxModels = xlsxService.readXlsx(path);
         List<CsvMailChimpModel> csvMailChimpModels = new ArrayList<>();
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+        convert(outputPath, xlsxModels, csvMailChimpModels, dateFormat);
+        return "fini sans exception, fichier créé dans " + outputPath;
+    }
+
+    private void convert(String outputPath, List<XlsxModel> xlsxModels, List<CsvMailChimpModel> csvMailChimpModels, DateTimeFormatter dateFormat) {
         for (XlsxModel xlsxModel : xlsxModels) {
             if ("Validé".equals(xlsxModel.getStatus())) {
                 CsvMailChimpModel csvMailChimpModel = new CsvMailChimpModel();
@@ -39,7 +44,6 @@ public class ConvertService {
             }
 
         }
-        csVprocessing.createCSVfile(csvMailChimpModels,outputPath);
-        return "fini sans exception, fichier créé dans " + outputPath;
+        csVprocessing.createCSVfile(csvMailChimpModels, outputPath);
     }
 }

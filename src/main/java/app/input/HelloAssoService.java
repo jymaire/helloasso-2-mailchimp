@@ -2,7 +2,9 @@ package app.input;
 
 import app.gui.MainWindow;
 import app.model.HelloAssoFormPayments;
+import app.model.HelloAssoPayment;
 import app.model.HelloAssoToken;
+import app.model.XlsxModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -17,6 +19,8 @@ import org.springframework.web.reactive.function.client.WebClientException;
 import reactor.netty.http.client.HttpClient;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 @Service
@@ -77,6 +81,18 @@ public class HelloAssoService {
         ResponseEntity<HelloAssoFormPayments> formResponse;
         try {
             formResponse = callPaymentFormHistory(token, now, beginDate,properties);
+
+            if (formResponse.getBody().getData() != null) {
+                List<XlsxModel> xlsxModels = new ArrayList<>();
+                for(HelloAssoPayment helloAssoPayment : formResponse.getBody().getData()) {
+                    XlsxModel xlsxModel = new XlsxModel();
+                    // Changer le bean HelloAssoPayment pour qu'il colle avec de l'asso
+                    // TODO puis remplir bean xls
+                    xlsxModels.add(xlsxModel);
+                }
+                // Call ConvertService.convert()
+
+            }
             System.out.println(formResponse.getBody().getData());
         } catch (WebClientException exception) {
             LOGGER.error("error during data fetch : {}", exception.getCause().getMessage());

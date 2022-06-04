@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 public class XlsxService {
     Logger logger = Logger.getLogger("csv");
 
-    public List<XlsxModel> readXlss(String path) {
+    public List<XlsxModel> readXlsx(String path) {
         List<XlsxModel> xlsxData = new ArrayList<>();
 
         File file = new File(path);
