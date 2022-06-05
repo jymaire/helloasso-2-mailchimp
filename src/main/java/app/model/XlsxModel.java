@@ -1,6 +1,5 @@
-package model;
+package app.model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class XlsxModel {
@@ -11,7 +10,7 @@ public class XlsxModel {
     private String status; // Validé
     private String tarif; //formule dans mailchimp
     private String codePostal;
-    private String entrpriseProjet;
+    private String entrepriseProjet;
 
     public XlsxModel() {
     }
@@ -72,12 +71,12 @@ public class XlsxModel {
         this.codePostal = codePostal;
     }
 
-    public String getEntrpriseProjet() {
-        return entrpriseProjet;
+    public String getEntrepriseProjet() {
+        return entrepriseProjet;
     }
 
-    public void setEntrpriseProjet(String entrpriseProjet) {
-        this.entrpriseProjet = entrpriseProjet;
+    public void setEntrepriseProjet(String entrepriseProjet) {
+        this.entrepriseProjet = entrepriseProjet;
     }
 
     public static final class XlsxModelBuilder {
@@ -146,7 +145,7 @@ public class XlsxModel {
             xlsxModel.setStatus(status);
             xlsxModel.setTarif(tarif);
             xlsxModel.setCodePostal(codePostal);
-            xlsxModel.setEntrpriseProjet(entrpriseProjet);
+            xlsxModel.setEntrepriseProjet(entrpriseProjet);
             return xlsxModel;
         }
     }
@@ -161,7 +160,7 @@ public class XlsxModel {
                 ", status='" + status + '\'' +
                 ", tarif='" + tarif + '\'' +
                 ", codePostal='" + codePostal + '\'' +
-                ", entrpriseProjet='" + entrpriseProjet + '\'' +
+                ", entrpriseProjet='" + entrepriseProjet + '\'' +
                 '}';
     }
 }

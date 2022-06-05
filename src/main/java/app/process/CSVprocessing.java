@@ -1,9 +1,10 @@
-package process;
+package app.process;
 
+import app.model.CsvMailChimpModel;
 import com.opencsv.CSVWriter;
 import com.opencsv.CSVWriterBuilder;
 import com.opencsv.ICSVWriter;
-import model.CsvMailChimpModel;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Service
 public class CSVprocessing {
 
     Logger logger = Logger.getLogger("csv");
