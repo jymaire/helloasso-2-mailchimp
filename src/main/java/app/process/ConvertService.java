@@ -29,7 +29,7 @@ public class ConvertService {
 
     private void convert(String outputPath, List<XlsxModel> xlsxModels, List<CsvMailChimpModel> csvMailChimpModels, DateTimeFormatter dateFormat) {
         for (XlsxModel xlsxModel : xlsxModels) {
-            if ("Validé".equals(xlsxModel.getStatus())) {
+            if ("Validé".equals(xlsxModel.getStatus()) || "Authorized".equals(xlsxModel.getStatus())) {
                 CsvMailChimpModel csvMailChimpModel = new CsvMailChimpModel();
                 csvMailChimpModel.setFormule(xlsxModel.getTarif().stripTrailing());
                 csvMailChimpModel.setNom(xlsxModel.getNom().stripTrailing());
@@ -39,8 +39,10 @@ public class ConvertService {
                 if (xlsxModel.getCodePostal() != null) {
                     csvMailChimpModel.setCodePostal(xlsxModel.getCodePostal().substring(0, 5));
                 }
-                csvMailChimpModel.setEntrepriseProjet(xlsxModel.getEntrpriseProjet());
+                csvMailChimpModel.setEntrepriseProjet(xlsxModel.getEntrepriseProjet());
                 csvMailChimpModels.add(csvMailChimpModel);
+            } else {
+                System.out.println("paiment non valide :" + xlsxModel.getStatus());
             }
 
         }

@@ -4,7 +4,9 @@ import app.input.HelloAssoService;
 import app.process.ConvertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -19,7 +21,7 @@ import java.util.Properties;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
-@Component
+@Service
 public class MainWindow {
 
     private ConvertService convertService;
@@ -29,11 +31,13 @@ public class MainWindow {
 
     public static Properties properties;
 
-    public MainWindow() {
+    public MainWindow(HelloAssoService helloAssoService) {
+        this.helloAssoService = helloAssoService;
         this.convertService = new ConvertService();
-        this.helloAssoService = new HelloAssoService();
+  //      this.helloAssoService = new HelloAssoService();
     }
 
+    @PostConstruct
     public void drawWindow() {
 
         properties = loadConfig();

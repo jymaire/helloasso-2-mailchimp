@@ -8,6 +8,8 @@ public class HelloAssoPayment {
     private int amount;
     private PaymentStateEnum state;
     private String paymentReceiptUrl;
+    private HelloAssoPayer payer;
+    private String date;
 
     public HelloAssoPayment() {
     }
@@ -44,6 +46,22 @@ public class HelloAssoPayment {
         this.paymentReceiptUrl = paymentReceiptUrl;
     }
 
+    public HelloAssoPayer getPayer() {
+        return payer;
+    }
+
+    public void setPayer(HelloAssoPayer payer) {
+        this.payer = payer;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
     @Override
     public String toString() {
         return "HelloAssoPayment{" +
@@ -51,6 +69,8 @@ public class HelloAssoPayment {
                 ", amount=" + amount +
                 ", state=" + state +
                 ", paymentReceiptUrl='" + paymentReceiptUrl + '\'' +
+                ", payer=" + payer +
+                ", date='" + date + '\'' +
                 '}';
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.web.reactive.function.client.WebClientException;
 import reactor.netty.http.client.HttpClient;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -84,10 +85,18 @@ public class HelloAssoService {
 
             if (formResponse.getBody().getData() != null) {
                 List<XlsxModel> xlsxModels = new ArrayList<>();
+                //DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-ddThh:ùù:SS.MS");
+
                 for(HelloAssoPayment helloAssoPayment : formResponse.getBody().getData()) {
                     XlsxModel xlsxModel = new XlsxModel();
                     // Changer le bean HelloAssoPayment pour qu'il colle avec de l'asso
                     // TODO puis remplir bean xls
+                    xlsxModel.setEmail(helloAssoPayment.getPayer().getEmail());
+                    xlsxModel.setCodePostal(helloAssoPayment.getPayer().getZipCode());
+                    xlsxModel.setNom(helloAssoPayment.getPayer().getLastName());
+                    xlsxModel.setPrenom(helloAssoPayment.getPayer().getFirstName());
+                    //xlsxModel.setDate(LocalDateTime.parse(helloAssoPayment.getDate()));
+                    xlsxModel.setStatus(helloAssoPayment.getState().name());
                     xlsxModels.add(xlsxModel);
                 }
                 // Call ConvertService.convert()

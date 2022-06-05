@@ -1,15 +1,19 @@
 package app;
 
-import app.gui.MainWindow;
+import app.gui.Run;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
+@ComponentScan("app")
 public class Application {
-        public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+    public static void main(String[] args) {
         System.setProperty("java.awt.headless", "false");
-        MainWindow mainWindow = new MainWindow();
-        mainWindow.drawWindow();
+        SpringApplication.run(Application.class, args);
+   //     Run run = new Run();
+ //       run.start();
     }
+
+
 }

@@ -51,7 +51,7 @@ public class XlsxService {
                     Cell codePostal = row.getCell(8);
                     currentLine.setCodePostal(Double.toString(codePostal.getNumericCellValue()));
                     Cell entrepriseProjet = row.getCell(9);
-                    currentLine.setEntrpriseProjet(entrepriseProjet.getStringCellValue());
+                    currentLine.setEntrepriseProjet(entrepriseProjet.getStringCellValue());
                     xlsxData.add(currentLine);
                     logger.info(currentLine.toString());
                 }
