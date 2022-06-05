@@ -3,7 +3,6 @@ package app.gui;
 import app.input.HelloAssoService;
 import app.process.ConvertService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -25,16 +24,13 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 public class MainWindow {
 
     private ConvertService convertService;
-
-    @Autowired
     private HelloAssoService helloAssoService;
 
     public static Properties properties;
 
-    public MainWindow(HelloAssoService helloAssoService) {
+    public MainWindow(HelloAssoService helloAssoService, ConvertService convertService) {
+        this.convertService = convertService;
         this.helloAssoService = helloAssoService;
-        this.convertService = new ConvertService();
-  //      this.helloAssoService = new HelloAssoService();
     }
 
     @PostConstruct

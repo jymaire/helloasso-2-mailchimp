@@ -3,13 +3,14 @@ package app.process;
 import app.model.XlsxModel;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.stereotype.Service;
 
 import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-
+@Service
 public class XlsxService {
     Logger logger = Logger.getLogger("csv");
 

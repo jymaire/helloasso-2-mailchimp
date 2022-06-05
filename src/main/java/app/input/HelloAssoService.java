@@ -5,6 +5,7 @@ import app.model.HelloAssoFormPayments;
 import app.model.HelloAssoPayment;
 import app.model.HelloAssoToken;
 import app.model.XlsxModel;
+import app.process.ConvertService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -19,7 +20,6 @@ import org.springframework.web.reactive.function.client.WebClientException;
 import reactor.netty.http.client.HttpClient;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -27,6 +27,12 @@ import java.util.Properties;
 @Service
 public class HelloAssoService {
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+
+    private ConvertService convertService;
+
+    public HelloAssoService(ConvertService convertService) {
+        this.convertService = convertService;
+    }
 
     private String getHelloAssoAccessToken(Properties properties) throws IllegalAccessException {
         MultiValueMap accessTokenBody = new LinkedMultiValueMap();
@@ -81,13 +87,13 @@ public class HelloAssoService {
 
         ResponseEntity<HelloAssoFormPayments> formResponse;
         try {
-            formResponse = callPaymentFormHistory(token, now, beginDate,properties);
+            formResponse = callPaymentFormHistory(token, now, beginDate, properties);
 
             if (formResponse.getBody().getData() != null) {
                 List<XlsxModel> xlsxModels = new ArrayList<>();
                 //DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-ddThh:ùù:SS.MS");
 
-                for(HelloAssoPayment helloAssoPayment : formResponse.getBody().getData()) {
+                for (HelloAssoPayment helloAssoPayment : formResponse.getBody().getData()) {
                     XlsxModel xlsxModel = new XlsxModel();
                     // Changer le bean HelloAssoPayment pour qu'il colle avec de l'asso
                     // TODO puis remplir bean xls
@@ -100,6 +106,7 @@ public class HelloAssoService {
                     xlsxModels.add(xlsxModel);
                 }
                 // Call ConvertService.convert()
+                convertService.convert(System.getProperty("user.dir").toString(), xlsxModels);
 
             }
             System.out.println(formResponse.getBody().getData());
@@ -107,7 +114,7 @@ public class HelloAssoService {
             LOGGER.error("error during data fetch : {}", exception.getCause().getMessage());
             return;
         } finally {
-            disconnect(token,properties);
+            disconnect(token, properties);
         }
 
     }
