@@ -31,6 +31,7 @@ public class MainWindow {
     private BenevolatCSVReader csvReader;
     private BenevoleWriter benevoleWriter;
     public static Properties properties;
+    private String existingFilePath = null;
 
     public MainWindow(HelloAssoService helloAssoService, ConvertService convertService, BenevolatCSVReader csvReader, BenevoleWriter benevoleWriter) {
         this.convertService = convertService;
@@ -69,10 +70,22 @@ public class MainWindow {
     private JPanel createBenevolePanel(JFrame mainWindow) {
 
         JPanel benevoleBasePanel = new JPanel();
-        benevoleBasePanel.setLayout(new BorderLayout(10, 10));
+        benevoleBasePanel.setLayout(new GridLayout(4, 1, 3, 3));
 
         // CSV Import
-        JButton importButton = new JButton("Choix fichier Framaform");
+
+        JButton loadExistingFileButton = new JButton("Choix fichier existant à completer");
+        loadExistingFileButton.setSize(40, 20);
+
+        loadExistingFileButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                String retour = selectOldFile(evt);
+                Popup ok = new Popup();
+                ok.actionPerformed(retour);
+            }
+        });
+
+        JButton importButton = new JButton("Choix nouveau fichier Framaform");
         importButton.setSize(40, 20);
 
         importButton.addActionListener(new ActionListener() {
@@ -82,6 +95,7 @@ public class MainWindow {
                 ok.actionPerformed(retour);
             }
         });
+        benevoleBasePanel.add(loadExistingFileButton);
         benevoleBasePanel.add(importButton);
         return benevoleBasePanel;
     }
@@ -161,9 +175,21 @@ public class MainWindow {
         if (excelChooser == JFileChooser.APPROVE_OPTION) {
             File selectedFile = csvFileChooser.getSelectedFile();
             List<BenevoleCsv> benevoleCsvList = csvReader.read(selectedFile);
-            String retour = benevoleWriter.write(benevoleCsvList, selectedFile.getParent());
+            String retour = benevoleWriter.write(benevoleCsvList, selectedFile.getParent(),existingFilePath);
             System.out.println(retour);
             return retour;
+        }
+        return "une erreur d'est produite";
+    }
+
+    private String selectOldFile(java.awt.event.ActionEvent evt) {
+        JFileChooser csvFileChooser = new JFileChooser(System.getProperty("user.dir"));
+        csvFileChooser.setDialogTitle("Choix du fichier existant");
+        int excelChooser = csvFileChooser.showOpenDialog(null);
+        if (excelChooser == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = csvFileChooser.getSelectedFile();
+            existingFilePath = selectedFile.getAbsolutePath();
+            return existingFilePath;
         }
         return "une erreur d'est produite";
     }

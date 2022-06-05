@@ -35,6 +35,12 @@ public class BenevolatCSVReader {
                     benevoleCsv.setDisponibilites(dispo);
                     List<String> poles = remplirPoles(nextRecord);
                     benevoleCsv.setPoles(poles);
+                    List<String> actions = remplirActions(nextRecord);
+                    benevoleCsv.setActions(actions);
+                    benevoleCsv.setAutonomie(nextRecord[31]);
+                    benevoleCsv.setPeurs(nextRecord[32]);
+                    benevoleCsv.setAttentes(nextRecord[33]);
+                    benevoleCsv.setRemarques(nextRecord[39]);
                     for (String cell : nextRecord) {
 
                         System.out.print(colNumber + " : " + cell + "\t");
@@ -54,12 +60,14 @@ public class BenevolatCSVReader {
     }
 
     private List<String> remplirDispo(String[] nextRecord) {
-        List<String> dispo = new ArrayList<>();
-        if (nextRecord[13] != "") dispo.add("soir");
-        if (nextRecord[14] != "") dispo.add("journée");
-        if (nextRecord[15] != "") dispo.add("weekend");
-        return dispo;
+        List<String> actions = new ArrayList<>();
+        if (nextRecord[13] != "") actions.add("soir");
+        if (nextRecord[14] != "") actions.add("journée");
+        if (nextRecord[15] != "") actions.add("weekend");
+        return actions;
     }
+
+
 
     private List<String> remplirPoles(String[] nextRecord) {
         List<String> poles = new ArrayList<>();
@@ -72,6 +80,18 @@ public class BenevolatCSVReader {
         if (nextRecord[22] != "") poles.add("Réseau des entrepreneurs.ses\n");
         if (nextRecord[23] != "") poles.add("Les p'tits culottés");
         return poles;
+    }
+
+    private List<String> remplirActions(String[] nextRecord) {
+        List<String> dispo = new ArrayList<>();
+        int i = 24;
+        if (nextRecord[i++] != "") dispo.add("communication");
+        if (nextRecord[i++] != "") dispo.add("redaction");
+        if (nextRecord[i++] != "") dispo.add("action-et-sensibilisation");
+        if (nextRecord[i++] != "") dispo.add("veille-juridique-info");
+        if (nextRecord[i++] != "") dispo.add("coordination-groupe");
+        if (nextRecord[i++] != "") dispo.add("gestion-commu");
+        return dispo;
     }
 
 }
