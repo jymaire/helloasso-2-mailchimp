@@ -1,9 +1,12 @@
-package app.model;
+package app.model.helloasso;
 
+
+import app.model.PaymentStateEnum;
 
 public class HelloAssoPayment {
 
     private String id;
+    private HelloAssoOrder order;
     // amount is in cents
     private int amount;
     private PaymentStateEnum state;
@@ -66,11 +69,20 @@ public class HelloAssoPayment {
     public String toString() {
         return "HelloAssoPayment{" +
                 "id='" + id + '\'' +
+                ", order=" + order +
                 ", amount=" + amount +
                 ", state=" + state +
                 ", paymentReceiptUrl='" + paymentReceiptUrl + '\'' +
                 ", payer=" + payer +
                 ", date='" + date + '\'' +
                 '}';
+    }
+
+    public HelloAssoOrder getOrder() {
+        return order;
+    }
+
+    public void setOrder(HelloAssoOrder order) {
+        this.order = order;
     }
 }

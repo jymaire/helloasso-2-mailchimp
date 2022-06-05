@@ -1,4 +1,4 @@
-package app.model;
+package app.model.helloasso;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

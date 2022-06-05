@@ -1,4 +1,4 @@
-package app.model;
+package app.model.helloasso;
 
 import java.util.List;
 
