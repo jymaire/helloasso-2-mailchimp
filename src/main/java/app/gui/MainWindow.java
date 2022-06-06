@@ -130,6 +130,7 @@ public class MainWindow {
 
         helloAssoImportButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                System.out.println("clic bouton");
                 try {
                     helloAssoService.getPaymentsFor((Integer) nbDay.getValue());
                 } catch (IllegalAccessException ex) {
