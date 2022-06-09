@@ -24,8 +24,15 @@ import java.util.*;
 
 @Service
 public class HelloAssoService {
+    // Tarifs :
+    public static final String REDUIT = "RÉDUIT";
+    public static final String NORMAL = "NORMAL";
+    public static final String PRO = "Professionnels";
+    public static final String PROJETS = "Entreprise/Projet";
+
     public static final String TARIF = "tarif";
     public static final String ENTREPRISE = "entreprise";
+    public static final String CODE_POSTAL = "Code Postal";
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     private ConvertService convertService;
@@ -62,10 +69,9 @@ public class HelloAssoService {
     }
 
     public ResponseEntity<HelloAssoFormPayments> callPaymentFormHistory(String accessToken, LocalDateTime now, LocalDateTime beginDate) {
-        // TODO Membership au lieu de PaymentForm pour ZDL
         return WebClient.builder().build().get()
                 .uri(properties.getProperty("HELLO_ASSO_API_URL") + "v5/organizations/" + properties.getProperty("HELLO_ASSO_ORGANIZATION") +
-                        "/forms/PaymentForm/" + properties.getProperty("HELLO_ASSO_FORM") + "/payments?from=" + beginDate + "&to=" + now + "&states=Authorized")
+                        "/forms/Membership/" + properties.getProperty("HELLO_ASSO_FORM") + "/payments?from=" + beginDate + "&to=" + now + "&states=Authorized")
                 .header("authorization", "Bearer " + accessToken)
                 .retrieve()
                 .toEntity(HelloAssoFormPayments.class)
@@ -101,7 +107,7 @@ public class HelloAssoService {
                     XlsxModel xlsxModel = new XlsxModel();
                     xlsxModel.setDate(LocalDateTime.parse(helloAssoPayment.getDate(), DateTimeFormatter.ISO_OFFSET_DATE_TIME));
                     xlsxModel.setEmail(helloAssoPayment.getPayer().getEmail());
-                    xlsxModel.setCodePostal(helloAssoPayment.getPayer().getZipCode());
+                    xlsxModel.setCodePostal(extraFields.get(CODE_POSTAL));
                     xlsxModel.setNom(helloAssoPayment.getPayer().getLastName());
                     xlsxModel.setPrenom(helloAssoPayment.getPayer().getFirstName());
                     xlsxModel.setStatus(helloAssoPayment.getState().name());
@@ -133,15 +139,19 @@ public class HelloAssoService {
             final List<HelloAssoOrderItem> items = orderResponse.getBody().getItems();
             if (!CollectionUtils.isEmpty(items)) {
                 for (HelloAssoOrderItem item : items) {
+                    if (REDUIT.equals(item.getName()) || PRO.equals(item.getName()) || NORMAL.equals(item.getName())) {
+                        LOGGER.debug("tarif trouvé");
+                        extraFields.put(TARIF, item.getName());
+                    }
                     if (!CollectionUtils.isEmpty(item.getCustomFields())) {
                         for (HelloAssoItemCustomField field : item.getCustomFields()) {
-                            if (TARIF.equals(field.getName())) {
-                                LOGGER.info("tarif trouvé");
-                                extraFields.put(TARIF, field.getAnswer());
-                            }
-                            if (ENTREPRISE.equals(field.getName())) {
-                                LOGGER.info("entreprise trouvé");
+                            if (PROJETS.equals(field.getName())) {
+                                LOGGER.debug("entreprise trouvée");
                                 extraFields.put(ENTREPRISE, field.getAnswer());
+                            }
+                            if (CODE_POSTAL.equals(field.getName())) {
+                                LOGGER.debug("code postal trouvée");
+                                extraFields.put(CODE_POSTAL, field.getAnswer());
                             }
                         }
                     }
