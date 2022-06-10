@@ -4,8 +4,6 @@ import java.util.List;
 
 public class MailChimpMemberList {
 
-    // tmp debug, virer list
-    private List<MailChimpList> lists;
     private List<MailChimpMember> members;
     private int totalItems;
 
@@ -25,18 +23,10 @@ public class MailChimpMemberList {
         this.totalItems = totalItems;
     }
 
-    public List<MailChimpList> getLists() {
-        return lists;
-    }
-
-    public void setLists(List<MailChimpList> lists) {
-        this.lists = lists;
-    }
 
     @Override
     public String toString() {
         return "MailChimpMemberList{" +
-                "lst" + lists +
                 "members=" + members +
                 ", totalItems=" + totalItems +
                 '}';

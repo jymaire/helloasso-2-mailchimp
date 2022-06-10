@@ -1,44 +1,39 @@
 package app.model.mailchimp;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.HashMap;
+
 public class MailChimpMember {
-    private String id;
-    private String emailAddress;
-    private String uniqueEmailId;
-    private String contactId;
+    @JsonProperty("email_address")
+    private String email;
+    @JsonProperty("email_type")
+    private String emailType;
+    @JsonProperty("full_name")
     private String fullName;
     private String status;
 
-    public String getId() {
-        return id;
+    @JsonProperty("merge_fields")
+    private HashMap<String,Object> mergeFields;
+
+
+    public String getEmailType() {
+        return emailType;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setEmailType(String emailType) {
+        this.emailType = emailType;
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
+    public String getEmail() {
+        return email;
     }
 
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getUniqueEmailId() {
-        return uniqueEmailId;
-    }
 
-    public void setUniqueEmailId(String uniqueEmailId) {
-        this.uniqueEmailId = uniqueEmailId;
-    }
-
-    public String getContactId() {
-        return contactId;
-    }
-
-    public void setContactId(String contactId) {
-        this.contactId = contactId;
-    }
 
     public String getFullName() {
         return fullName;
@@ -56,13 +51,18 @@ public class MailChimpMember {
         this.status = status;
     }
 
+    public HashMap<String, Object> getMergeFields() {
+        return mergeFields;
+    }
+
+    public void setMergeFields(HashMap<String, Object> mergeFields) {
+        this.mergeFields = mergeFields;
+    }
+
     @Override
     public String toString() {
         return "MailChimpMember{" +
-                "id='" + id + '\'' +
-                ", emailAddress='" + emailAddress + '\'' +
-                ", uniqueEmailId='" + uniqueEmailId + '\'' +
-                ", contactId='" + contactId + '\'' +
+                ", uniqueEmailId='" + email + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", status='" + status + '\'' +
                 '}';
