@@ -1,4 +1,4 @@
-package app.process;
+package app.output;
 
 import app.model.BenevoleCsv;
 import org.apache.commons.lang3.StringUtils;
