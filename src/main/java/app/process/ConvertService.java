@@ -69,6 +69,8 @@ public class ConvertService {
                 csvMailChimpModel.setEntrepriseProjet(xlsxModel.getEntrepriseProjet());
                 mergeFields.put("MMERGE3", xlsxModel.getEntrepriseProjet());
                 mailChimpMember.setMergeFields(mergeFields);
+                mailChimpMember.setStatus("subscribed");
+                mailChimpMember.setStatusIfNew("subscribed");
                 mailChimpMembers.add(mailChimpMember);
                 csvMailChimpModels.add(csvMailChimpModel);
             } else {
@@ -77,7 +79,7 @@ public class ConvertService {
 
         }
         LOGGER.debug("sortie : " + outputPath);
-        if ("true".equals(properties.getProperty("MAIL_CHIMP_AUTO"))) {
+        if ("true".equals(MainWindow.properties.getProperty("MAIL_CHIMP_AUTO"))) {
             mailChimpService.addMembers(mailChimpMembers);
         }
         csvProcessing.createCSVfile(csvMailChimpModels, outputPath);

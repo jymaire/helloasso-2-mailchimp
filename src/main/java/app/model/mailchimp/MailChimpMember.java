@@ -9,10 +9,11 @@ public class MailChimpMember {
     private String email;
     @JsonProperty("email_type")
     private String emailType;
-    @JsonProperty("full_name")
-    private String fullName;
+    @JsonProperty("status")
     private String status;
 
+    @JsonProperty("status_if_new")
+    private String statusIfNew;
     @JsonProperty("merge_fields")
     private HashMap<String,Object> mergeFields;
 
@@ -34,13 +35,12 @@ public class MailChimpMember {
     }
 
 
-
-    public String getFullName() {
-        return fullName;
+    public String getStatusIfNew() {
+        return statusIfNew;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setStatusIfNew(String statusIfNew) {
+        this.statusIfNew = statusIfNew;
     }
 
     public String getStatus() {
@@ -62,9 +62,11 @@ public class MailChimpMember {
     @Override
     public String toString() {
         return "MailChimpMember{" +
-                ", uniqueEmailId='" + email + '\'' +
-                ", fullName='" + fullName + '\'' +
+                "email='" + email + '\'' +
+                ", emailType='" + emailType + '\'' +
                 ", status='" + status + '\'' +
+                ", statusIfNew='" + statusIfNew + '\'' +
+                ", mergeFields=" + mergeFields +
                 '}';
     }
 }
