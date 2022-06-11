@@ -1,7 +1,9 @@
 package app.process;
 
 import app.model.XlsxModel;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
@@ -38,23 +40,25 @@ public class XlsxService {
                 } else {
                     XlsxModel currentLine = new XlsxModel();
                     Cell date = row.getCell(0);
-                    currentLine.setDate(date.getLocalDateTimeCellValue());
-                    Cell email = row.getCell(1);
-                    currentLine.setEmail(email.getStringCellValue());
-                    Cell nom = row.getCell(2);
-                    currentLine.setNom(nom.getStringCellValue());
-                    Cell prenom = row.getCell(3);
-                    currentLine.setPrenom(prenom.getStringCellValue());
-                    Cell status = row.getCell(4);
-                    currentLine.setStatus(status.getStringCellValue());
-                    Cell tarif = row.getCell(5);
-                    currentLine.setTarif(tarif.getStringCellValue());
-                    Cell codePostal = row.getCell(8);
-                    currentLine.setCodePostal(Double.toString(codePostal.getNumericCellValue()));
-                    Cell entrepriseProjet = row.getCell(9);
-                    currentLine.setEntrepriseProjet(entrepriseProjet.getStringCellValue());
-                    xlsxData.add(currentLine);
-                    logger.info(currentLine.toString());
+                    if(date !=null){
+                        currentLine.setDate(date.getLocalDateTimeCellValue());
+                        Cell email = row.getCell(1);
+                        currentLine.setEmail(email.getStringCellValue());
+                        Cell nom = row.getCell(2);
+                        currentLine.setNom(nom.getStringCellValue());
+                        Cell prenom = row.getCell(3);
+                        currentLine.setPrenom(prenom.getStringCellValue());
+                        Cell status = row.getCell(4);
+                        currentLine.setStatus(status.getStringCellValue());
+                        Cell tarif = row.getCell(5);
+                        currentLine.setTarif(tarif.getStringCellValue());
+                        Cell codePostal = row.getCell(8);
+                        currentLine.setCodePostal(Double.toString(codePostal.getNumericCellValue()));
+                        Cell entrepriseProjet = row.getCell(9);
+                        currentLine.setEntrepriseProjet(entrepriseProjet.getStringCellValue());
+                        xlsxData.add(currentLine);
+                        logger.info(currentLine.toString());
+                    }
                 }
             }
         } catch (FileNotFoundException e) {

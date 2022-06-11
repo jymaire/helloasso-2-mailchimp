@@ -85,8 +85,10 @@ public class MailChimpService {
                     .bodyToMono(Object.class)
                     .block();
         } catch (WebClientException e) {
-            if (((WebClientResponseException.NotFound) e).getStatusCode().value() == 404) {
+            if (e instanceof WebClientResponseException && ((WebClientResponseException.NotFound) e).getStatusCode().value() == 404) {
                 isPresent = false;
+            } else {
+                throw e;
             }
         }
         return isPresent;
