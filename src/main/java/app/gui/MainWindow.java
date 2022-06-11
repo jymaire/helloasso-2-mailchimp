@@ -3,7 +3,8 @@ package app.gui;
 import app.input.BenevolatCSVReader;
 import app.input.HelloAssoService;
 import app.model.BenevoleCsv;
-import app.process.BenevoleWriter;
+import app.output.BenevoleWriter;
+import app.output.MailChimpService;
 import app.process.ConvertService;
 import org.springframework.stereotype.Service;
 
@@ -28,14 +29,16 @@ public class MainWindow {
 
     private ConvertService convertService;
     private HelloAssoService helloAssoService;
+    private MailChimpService mailChimpService;
     private BenevolatCSVReader csvReader;
     private BenevoleWriter benevoleWriter;
     public static Properties properties;
     private String existingFilePath = null;
 
-    public MainWindow(HelloAssoService helloAssoService, ConvertService convertService, BenevolatCSVReader csvReader, BenevoleWriter benevoleWriter) {
+    public MainWindow(HelloAssoService helloAssoService, ConvertService convertService, MailChimpService mailChimpService, BenevolatCSVReader csvReader, BenevoleWriter benevoleWriter) {
         this.convertService = convertService;
         this.helloAssoService = helloAssoService;
+        this.mailChimpService = mailChimpService;
         this.csvReader = csvReader;
         this.benevoleWriter = benevoleWriter;
     }
@@ -54,7 +57,6 @@ public class MainWindow {
         mainWindow.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         // UI for humans
-
         JTabbedPane tabs = new JTabbedPane();
 
         JPanel helloAssoBasePanel = createHelloAssoPanel(mainWindow);
@@ -117,7 +119,7 @@ public class MainWindow {
         });
 
         // API Import
-        JPanel nbDayPanel = new JPanel(new GridLayout(2, 1));
+        JPanel nbDayPanel = new JPanel(new GridLayout(3, 1));
         JTextArea nbDayText = new JTextArea();
         nbDayText.setText("Nombre de jours à récupérer");
         nbDayPanel.add(nbDayText);
@@ -138,6 +140,7 @@ public class MainWindow {
                 }
             }
         });
+
         helloAssoBasePanel.add(importButton, BorderLayout.NORTH);
         helloAssoBasePanel.add(nbDayPanel, BorderLayout.LINE_START);
         helloAssoBasePanel.add(helloAssoImportButton, BorderLayout.LINE_END);

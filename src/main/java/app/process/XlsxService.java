@@ -33,7 +33,7 @@ public class XlsxService {
             Sheet sheet = wb.getSheetAt(0);
             boolean firstRow = true;
             for (Row row : sheet) {
-                if (firstRow) {
+                if (firstRow || row.getPhysicalNumberOfCells() == 0) {
                     firstRow = false;
                 } else {
                     XlsxModel currentLine = new XlsxModel();
