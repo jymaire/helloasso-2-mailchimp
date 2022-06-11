@@ -70,7 +70,6 @@ public class ConvertService {
                 mergeFields.put("MMERGE3", xlsxModel.getEntrepriseProjet());
                 mailChimpMember.setMergeFields(mergeFields);
                 mailChimpMember.setStatus("subscribed");
-                mailChimpMember.setStatusIfNew("subscribed");
                 mailChimpMembers.add(mailChimpMember);
                 csvMailChimpModels.add(csvMailChimpModel);
             } else {

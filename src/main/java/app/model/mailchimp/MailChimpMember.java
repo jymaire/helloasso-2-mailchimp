@@ -12,10 +12,8 @@ public class MailChimpMember {
     @JsonProperty("status")
     private String status;
 
-    @JsonProperty("status_if_new")
-    private String statusIfNew;
     @JsonProperty("merge_fields")
-    private HashMap<String,Object> mergeFields;
+    private HashMap<String, Object> mergeFields;
 
 
     public String getEmailType() {
@@ -32,15 +30,6 @@ public class MailChimpMember {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-
-    public String getStatusIfNew() {
-        return statusIfNew;
-    }
-
-    public void setStatusIfNew(String statusIfNew) {
-        this.statusIfNew = statusIfNew;
     }
 
     public String getStatus() {
@@ -65,7 +54,6 @@ public class MailChimpMember {
                 "email='" + email + '\'' +
                 ", emailType='" + emailType + '\'' +
                 ", status='" + status + '\'' +
-                ", statusIfNew='" + statusIfNew + '\'' +
                 ", mergeFields=" + mergeFields +
                 '}';
     }
