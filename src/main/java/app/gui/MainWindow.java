@@ -57,7 +57,6 @@ public class MainWindow {
         mainWindow.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         // UI for humans
-
         JTabbedPane tabs = new JTabbedPane();
 
         JPanel helloAssoBasePanel = createHelloAssoPanel(mainWindow);
@@ -142,22 +141,9 @@ public class MainWindow {
             }
         });
 
-        JButton testmailchimp = new JButton("Import automatique depuis Mail Chimp");
-        testmailchimp.setSize(80, 20);
-        testmailchimp.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    mailChimpService.getPaymentsFor(1);
-                } catch (IllegalAccessException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
         helloAssoBasePanel.add(importButton, BorderLayout.NORTH);
         helloAssoBasePanel.add(nbDayPanel, BorderLayout.LINE_START);
         helloAssoBasePanel.add(helloAssoImportButton, BorderLayout.LINE_END);
-        helloAssoBasePanel.add(testmailchimp, BorderLayout.PAGE_END);
         return helloAssoBasePanel;
     }
 
