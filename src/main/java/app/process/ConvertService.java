@@ -60,7 +60,7 @@ public class ConvertService {
                     mergeFields.put("DATELASTAD", xlsxModel.getDate().format(dateFormat));
                 }
                 csvMailChimpModel.setEmail(xlsxModel.getEmail().stripTrailing());
-                mailChimpMember.setEmail(xlsxModel.getEmail().stripTrailing());
+                mailChimpMember.setEmail_address(xlsxModel.getEmail().stripTrailing());
                 mailChimpMember.setEmailType("html");
                 if (xlsxModel.getCodePostal() != null) {
                     csvMailChimpModel.setCodePostal(xlsxModel.getCodePostal().substring(0, 5));

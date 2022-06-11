@@ -41,29 +41,36 @@ public class MailChimpService {
     }
 
     private Object addOneMember(MailChimpMember newMember) {
-        HttpClient httpClient = HttpClient
-                .create()
-                .wiretap(true);
-        String emailHash = "";
-        emailHash = commuteEmailHash(newMember.getEmail());
-        boolean isMemberPresent = isMemberPresent(httpClient, emailHash);
-        LOGGER.info("Member already there ? {}", isMemberPresent);
-        Object postResponse;
-        if (isMemberPresent) {
-            MailChimpMemberUpdate mailChimpMemberUpdate = MailChimpMemberUpdate.MailChimpMemberUpdateBuilder.aMailChimpMemberUpdate()
-                    .withEmail(newMember.getEmail())
-                    .withEmailType(newMember.getEmailType())
-                    .withMergeFields(newMember.getMergeFields())
-                    .withStatus(newMember.getStatus())
-                    .withStatusIfNew("subscribed")
-                    .build();
-            postResponse = updateMember(mailChimpMemberUpdate, httpClient, emailHash);
-            LOGGER.info("maj : {}", postResponse);
-        } else {
-            postResponse = createMember(newMember, httpClient);
-            LOGGER.info("creation : {}", postResponse);
+        try {
+
+            HttpClient httpClient = HttpClient
+                    .create()
+                    .wiretap(true);
+            String emailHash = "";
+            emailHash = commuteEmailHash(newMember.getEmail_address());
+            boolean isMemberPresent = isMemberPresent(httpClient, emailHash);
+            LOGGER.info("Member already there ? {}", isMemberPresent);
+            Object postResponse;
+            if (isMemberPresent) {
+                MailChimpMemberUpdate mailChimpMemberUpdate = MailChimpMemberUpdate.MailChimpMemberUpdateBuilder.aMailChimpMemberUpdate()
+                        .withEmail(newMember.getEmail_address())
+                        .withEmailType(newMember.getEmailType())
+                        .withMergeFields(newMember.getMergeFields())
+                        .withStatus(newMember.getStatus())
+                        .withStatusIfNew("subscribed")
+                        .build();
+                postResponse = updateMember(mailChimpMemberUpdate, httpClient, emailHash);
+                LOGGER.info("maj : {}", postResponse);
+            } else {
+                postResponse = createMember(newMember, httpClient);
+                LOGGER.info("creation : {}", postResponse);
+            }
+            return postResponse;
         }
-        return postResponse;
+        catch (Exception e){
+            LOGGER.error("Une erreur est apparu : {}", e.getMessage());
+            return null;
+        }
     }
 
     private boolean isMemberPresent(HttpClient httpClient, String emailHash) {
