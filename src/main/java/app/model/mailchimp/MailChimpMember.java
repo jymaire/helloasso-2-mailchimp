@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class MailChimpMember {
     @JsonProperty("email_address")
-    private String email;
+    private String email_address;
     @JsonProperty("email_type")
     private String emailType;
     @JsonProperty("status")
@@ -24,12 +24,12 @@ public class MailChimpMember {
         this.emailType = emailType;
     }
 
-    public String getEmail() {
-        return email;
+    public String getEmail_address() {
+        return email_address;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setEmail_address(String email_address) {
+        this.email_address = email_address;
     }
 
     public String getStatus() {
@@ -51,7 +51,7 @@ public class MailChimpMember {
     @Override
     public String toString() {
         return "MailChimpMember{" +
-                "email='" + email + '\'' +
+                "email='" + email_address + '\'' +
                 ", emailType='" + emailType + '\'' +
                 ", status='" + status + '\'' +
                 ", mergeFields=" + mergeFields +
