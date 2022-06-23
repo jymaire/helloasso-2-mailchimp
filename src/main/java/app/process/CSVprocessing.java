@@ -13,13 +13,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class CSVprocessing {
 
-    Logger logger = Logger.getLogger("csv");
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     public void createCSVfile(List<CsvMailChimpModel> csvMailChimpModels, String outputPath) {
         String[] header = {"Formule", "Moyen de paiement", "Nom", "Prénom", "Société", "Date", "Email", "Champ additionnel: Code Postal", "Champ additionnel: Entreprise/Projet"};
@@ -38,7 +38,7 @@ public class CSVprocessing {
             data[6] = csvMailChimpModel.getEmail();
             data[7] = csvMailChimpModel.getCodePostal();
             data[8] = csvMailChimpModel.getEntrepriseProjet();
-            logger.info(csvMailChimpModel.toString());
+            LOGGER.info(csvMailChimpModel.toString());
             list.add(data);
         }
 
@@ -53,9 +53,7 @@ public class CSVprocessing {
                 .build()) {
             writer.writeAll(list);
         } catch (IOException e) {
-            String message = "erreur " + e.getStackTrace().toString();
-            Level level = Level.SEVERE;
-            logger.log(level, message);
+            LOGGER.error("erreur : {}", e.getStackTrace());
             throw new RuntimeException(e);
         }
     }

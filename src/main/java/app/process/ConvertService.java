@@ -42,40 +42,43 @@ public class ConvertService {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         List<MailChimpMember> mailChimpMembers = new ArrayList<>();
         for (XlsxModel xlsxModel : xlsxModels) {
-            if ("Validé".equals(xlsxModel.getStatus()) || "Authorized".equals(xlsxModel.getStatus())) {
-                CsvMailChimpModel csvMailChimpModel = new CsvMailChimpModel();
-                MailChimpMember mailChimpMember = new MailChimpMember();
-                HashMap<String, Object> mergeFields = new HashMap<>();
-                mergeFields.put("PAYEMENT", "Carte bancaire");
-                if (xlsxModel.getTarif() != null) {
-                    csvMailChimpModel.setFormule(xlsxModel.getTarif().stripTrailing());
-                    mergeFields.put("FORMULE", xlsxModel.getTarif().stripTrailing());
+            try {
+                if ("Validé".equals(xlsxModel.getStatus()) || "Authorized".equals(xlsxModel.getStatus())) {
+                    CsvMailChimpModel csvMailChimpModel = new CsvMailChimpModel();
+                    MailChimpMember mailChimpMember = new MailChimpMember();
+                    HashMap<String, Object> mergeFields = new HashMap<>();
+                    mergeFields.put("PAYEMENT", "Carte bancaire");
+                    if (xlsxModel.getTarif() != null) {
+                        csvMailChimpModel.setFormule(xlsxModel.getTarif().stripTrailing());
+                        mergeFields.put("FORMULE", xlsxModel.getTarif().stripTrailing());
+                    }
+                    csvMailChimpModel.setNom(xlsxModel.getNom().stripTrailing());
+                    csvMailChimpModel.setPrenom(xlsxModel.getPrenom().stripTrailing());
+                    mergeFields.put("LNAME", xlsxModel.getNom().stripTrailing());
+                    mergeFields.put("FNAME", xlsxModel.getPrenom().stripTrailing());
+                    if (xlsxModel.getDate() != null) {
+                        csvMailChimpModel.setDate(xlsxModel.getDate().format(dateFormat));
+                        mergeFields.put("DATELASTAD", xlsxModel.getDate().format(dateFormat));
+                    }
+                    csvMailChimpModel.setEmail(xlsxModel.getEmail().stripTrailing());
+                    mailChimpMember.setEmail_address(xlsxModel.getEmail().stripTrailing());
+                    mailChimpMember.setEmailType("html");
+                    if (xlsxModel.getCodePostal() != null) {
+                        csvMailChimpModel.setCodePostal(xlsxModel.getCodePostal().substring(0, 5));
+                        mergeFields.put("CP", xlsxModel.getCodePostal().substring(0, 5));
+                    }
+                    csvMailChimpModel.setEntrepriseProjet(xlsxModel.getEntrepriseProjet());
+                    mergeFields.put("MMERGE3", xlsxModel.getEntrepriseProjet());
+                    mailChimpMember.setMergeFields(mergeFields);
+                    mailChimpMember.setStatus("subscribed");
+                    mailChimpMembers.add(mailChimpMember);
+                    csvMailChimpModels.add(csvMailChimpModel);
+                } else {
+                    LOGGER.info("paiment non valide :" + xlsxModel.getStatus());
                 }
-                csvMailChimpModel.setNom(xlsxModel.getNom().stripTrailing());
-                csvMailChimpModel.setPrenom(xlsxModel.getPrenom().stripTrailing());
-                mergeFields.put("LNAME", xlsxModel.getNom().stripTrailing());
-                mergeFields.put("FNAME", xlsxModel.getPrenom().stripTrailing());
-                if (xlsxModel.getDate() != null) {
-                    csvMailChimpModel.setDate(xlsxModel.getDate().format(dateFormat));
-                    mergeFields.put("DATELASTAD", xlsxModel.getDate().format(dateFormat));
-                }
-                csvMailChimpModel.setEmail(xlsxModel.getEmail().stripTrailing());
-                mailChimpMember.setEmail_address(xlsxModel.getEmail().stripTrailing());
-                mailChimpMember.setEmailType("html");
-                if (xlsxModel.getCodePostal() != null) {
-                    csvMailChimpModel.setCodePostal(xlsxModel.getCodePostal().substring(0, 5));
-                    mergeFields.put("CP", xlsxModel.getCodePostal().substring(0, 5));
-                }
-                csvMailChimpModel.setEntrepriseProjet(xlsxModel.getEntrepriseProjet());
-                mergeFields.put("MMERGE3", xlsxModel.getEntrepriseProjet());
-                mailChimpMember.setMergeFields(mergeFields);
-                mailChimpMember.setStatus("subscribed");
-                mailChimpMembers.add(mailChimpMember);
-                csvMailChimpModels.add(csvMailChimpModel);
-            } else {
-                LOGGER.info("paiment non valide :" + xlsxModel.getStatus());
+            }catch (Exception e){
+                LOGGER.error("Erreur : {}",e.getMessage());
             }
-
         }
         LOGGER.debug("sortie : " + outputPath);
         if ("true".equals(MainWindow.properties.getProperty("MAIL_CHIMP_AUTO"))) {

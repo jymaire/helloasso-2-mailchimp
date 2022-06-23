@@ -21,12 +21,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 @Service
 public class MainWindow {
-
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private ConvertService convertService;
     private HelloAssoService helloAssoService;
     private MailChimpService mailChimpService;
@@ -132,11 +134,11 @@ public class MainWindow {
 
         helloAssoImportButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println("clic bouton");
                 try {
                     helloAssoService.getPaymentsFor((Integer) nbDay.getValue());
-                } catch (IllegalAccessException ex) {
-                    ex.printStackTrace();
+                } catch (Exception ex) {
+                    LOGGER.error(ex.getMessage());
+                    LOGGER.error(ex.getStackTrace().toString());
                 }
             }
         });
@@ -187,11 +189,11 @@ public class MainWindow {
     }
 
     private String selectOldFile(java.awt.event.ActionEvent evt) {
-        JFileChooser csvFileChooser = new JFileChooser(System.getProperty("user.dir"));
-        csvFileChooser.setDialogTitle("Choix du fichier existant");
-        int excelChooser = csvFileChooser.showOpenDialog(null);
+        JFileChooser existingCsvFileChooser = new JFileChooser(System.getProperty("user.dir"));
+        existingCsvFileChooser.setDialogTitle("Choix du fichier existant");
+        int excelChooser = existingCsvFileChooser.showOpenDialog(null);
         if (excelChooser == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = csvFileChooser.getSelectedFile();
+            File selectedFile = existingCsvFileChooser.getSelectedFile();
             existingFilePath = selectedFile.getAbsolutePath();
             return existingFilePath;
         }

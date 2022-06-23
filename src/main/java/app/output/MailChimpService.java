@@ -47,10 +47,10 @@ public class MailChimpService {
                     .create()
                     .wiretap(true);
             String emailHash = "";
-            emailHash = commuteEmailHash(newMember.getEmail_address());
+            emailHash = commuteEmailHash(newMember.getEmail_address().toLowerCase());
             boolean isMemberPresent = isMemberPresent(httpClient, emailHash);
             LOGGER.info("Member already there ? {}", isMemberPresent);
-            Object postResponse;
+            Object postResponse = null;
             if (isMemberPresent) {
                 MailChimpMemberUpdate mailChimpMemberUpdate = MailChimpMemberUpdate.MailChimpMemberUpdateBuilder.aMailChimpMemberUpdate()
                         .withEmail(newMember.getEmail_address())
@@ -62,12 +62,15 @@ public class MailChimpService {
                 postResponse = updateMember(mailChimpMemberUpdate, httpClient, emailHash);
                 LOGGER.info("maj : {}", postResponse);
             } else {
-                postResponse = createMember(newMember, httpClient);
-                LOGGER.info("creation : {}", postResponse);
+                try {
+                    postResponse = createMember(newMember, httpClient);
+                    LOGGER.info("creation : {}", postResponse);
+                } catch (Exception e) {
+                    LOGGER.error("Erreur lors de la création : {}", e.getMessage());
+                }
             }
             return postResponse;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             LOGGER.error("Une erreur est apparu : {}", e.getMessage());
             return null;
         }
@@ -75,8 +78,9 @@ public class MailChimpService {
 
     private boolean isMemberPresent(HttpClient httpClient, String emailHash) {
         boolean isPresent = true;
+
         try {
-            WebClient.builder()
+            Object result = WebClient.builder()
                     .clientConnector(new ReactorClientHttpConnector(httpClient)).build().get()
                     .uri(MainWindow.properties.getProperty("MAIL_CHIMP_API_URL") + "lists/" + MainWindow.properties.getProperty("MAIL_CHIMP_LIST_ID") + "/members/" + emailHash)
                     .accept(MediaType.APPLICATION_JSON)
@@ -84,6 +88,7 @@ public class MailChimpService {
                             .encodeToString(("username" + ":" + MainWindow.properties.getProperty("MAIL_CHIMP_API_KEY")).getBytes(UTF_8))).retrieve()
                     .bodyToMono(Object.class)
                     .block();
+            LOGGER.debug(result.toString());
         } catch (WebClientException e) {
             if (e instanceof WebClientResponseException && ((WebClientResponseException.NotFound) e).getStatusCode().value() == 404) {
                 isPresent = false;
