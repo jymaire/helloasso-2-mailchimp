@@ -99,6 +99,7 @@ public class HelloAssoService {
 
             if (formResponse.getBody().getData() != null) {
                 List<XlsxModel> xlsxModels = new ArrayList<>();
+                MainWindow.importResult.append("Les adhésions suivantes ont été trouvées dans Hello Asso : ");
 
                 for (HelloAssoPayment helloAssoPayment : formResponse.getBody().getData()) {
                     // besoin des champs additionnels
@@ -114,11 +115,16 @@ public class HelloAssoService {
                     xlsxModel.setTarif(extraFields.get(TARIF));
                     xlsxModel.setEntrepriseProjet(extraFields.get(ENTREPRISE));
                     xlsxModels.add(xlsxModel);
+                    MainWindow.importResult.append("<br/>");
+                    MainWindow.importResult.append(xlsxModel);
+
                 }
                 convertService.convert(System.getProperty("user.dir"), xlsxModels);
 
+            }else {
+                MainWindow.importResult.append("Aucune résultat trouvé dans Hello Asso");
             }
-            System.out.println(formResponse.getBody().getData());
+            LOGGER.info(formResponse.getBody().getData().toString());
         } catch (WebClientException exception) {
             LOGGER.error("error during data fetch : {}", exception.getCause());
             return;

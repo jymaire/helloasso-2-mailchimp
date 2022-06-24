@@ -37,6 +37,8 @@ public class MainWindow {
     public static Properties properties;
     private String existingFilePath = null;
 
+    public static StringBuilder importResult = new StringBuilder();
+
     public MainWindow(HelloAssoService helloAssoService, ConvertService convertService, MailChimpService mailChimpService, BenevolatCSVReader csvReader, BenevoleWriter benevoleWriter) {
         this.convertService = convertService;
         this.helloAssoService = helloAssoService;
@@ -134,11 +136,23 @@ public class MainWindow {
 
         helloAssoImportButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                importResult = new StringBuilder();
+                importResult.append("<html>");
                 try {
                     helloAssoService.getPaymentsFor((Integer) nbDay.getValue());
                 } catch (Exception ex) {
                     LOGGER.error(ex.getMessage());
                     LOGGER.error(ex.getStackTrace().toString());
+                    importResult.append("<br/>");
+                    importResult.append("une erreur est survenue")
+                            .append(ex.getMessage());
+
+                } finally {
+                    Popup recap = new Popup();
+                    recap.pack();
+                    importResult.append("</html>");
+                    recap.actionPerformed(importResult.toString(),1000,300);
+
                 }
             }
         });
