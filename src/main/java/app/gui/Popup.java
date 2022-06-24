@@ -12,4 +12,13 @@ public class Popup extends JFrame {
         d.setVisible(true);
 
     }
+
+    public void actionPerformed(String retour, int width, int height) {
+        JDialog d = new JDialog(frame, "Résultat");
+        JLabel l = new JLabel(retour);
+        d.add(l);
+        d.setSize(width, height);
+        d.setVisible(true);
+
+    }
 }

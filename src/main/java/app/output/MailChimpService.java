@@ -41,8 +41,8 @@ public class MailChimpService {
     }
 
     private Object addOneMember(MailChimpMember newMember) {
+        boolean memberAddedSuccessfully = false;
         try {
-
             HttpClient httpClient = HttpClient
                     .create()
                     .wiretap(true);
@@ -69,10 +69,22 @@ public class MailChimpService {
                     LOGGER.error("Erreur lors de la création : {}", e.getMessage());
                 }
             }
+            memberAddedSuccessfully = true;
+
             return postResponse;
         } catch (Exception e) {
             LOGGER.error("Une erreur est apparu : {}", e.getMessage());
             return null;
+        } finally {
+            MainWindow.importResult.append("<br/>");
+            MainWindow.importResult.append("Ajout de l'adhérent ");
+            MainWindow.importResult.append(newMember.getEmail_address());
+            MainWindow.importResult.append(" réussi : ");
+            if (memberAddedSuccessfully) {
+                MainWindow.importResult.append("oui");
+            } else {
+                MainWindow.importResult.append("non");
+            }
         }
     }
 
