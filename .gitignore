@@ -1,0 +1,5 @@
+/target/
+/ha2mc-core/target/
+/ha2mc-desktop/target/
+*.log
+/logs/

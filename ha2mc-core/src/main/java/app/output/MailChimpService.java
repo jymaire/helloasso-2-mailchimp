@@ -1,6 +1,5 @@
 package app.output;
 
-import app.gui.MainWindow;
 import app.model.mailchimp.MailChimpMember;
 import app.model.mailchimp.MailChimpMemberUpdate;
 import org.slf4j.Logger;
@@ -20,12 +19,20 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Service
 public class MailChimpService {
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private Properties properties;
+    private StringBuilder importResult;
+
+    public MailChimpService(Properties properties, StringBuilder importResult) {
+        this.properties = properties;
+        this.importResult = importResult;
+    }
 
     public String addMembers(List<MailChimpMember> memberList) {
 
@@ -76,14 +83,14 @@ public class MailChimpService {
             LOGGER.error("Une erreur est apparu : {}", e.getMessage());
             return null;
         } finally {
-            MainWindow.importResult.append("<br/>");
-            MainWindow.importResult.append("Ajout de l'adhérent ");
-            MainWindow.importResult.append(newMember.getEmail_address());
-            MainWindow.importResult.append(" réussi : ");
+            importResult.append("<br/>");
+            importResult.append("Ajout de l'adhérent ");
+            importResult.append(newMember.getEmail_address());
+            importResult.append(" réussi : ");
             if (memberAddedSuccessfully) {
-                MainWindow.importResult.append("oui");
+                importResult.append("oui");
             } else {
-                MainWindow.importResult.append("non");
+                importResult.append("non");
             }
         }
     }
@@ -94,10 +101,10 @@ public class MailChimpService {
         try {
             Object result = WebClient.builder()
                     .clientConnector(new ReactorClientHttpConnector(httpClient)).build().get()
-                    .uri(MainWindow.properties.getProperty("MAIL_CHIMP_API_URL") + "lists/" + MainWindow.properties.getProperty("MAIL_CHIMP_LIST_ID") + "/members/" + emailHash)
+                    .uri(properties.getProperty("MAIL_CHIMP_API_URL") + "lists/" + properties.getProperty("MAIL_CHIMP_LIST_ID") + "/members/" + emailHash)
                     .accept(MediaType.APPLICATION_JSON)
                     .header("Authorization", "Basic " + Base64Utils
-                            .encodeToString(("username" + ":" + MainWindow.properties.getProperty("MAIL_CHIMP_API_KEY")).getBytes(UTF_8))).retrieve()
+                            .encodeToString(("username" + ":" + properties.getProperty("MAIL_CHIMP_API_KEY")).getBytes(UTF_8))).retrieve()
                     .bodyToMono(Object.class)
                     .block();
             LOGGER.debug(result.toString());
@@ -114,11 +121,11 @@ public class MailChimpService {
     private Object updateMember(MailChimpMemberUpdate memberUpdate, HttpClient httpClient, String emailHash) {
         Object postResponse = WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(httpClient)).build().put()
-                .uri(MainWindow.properties.getProperty("MAIL_CHIMP_API_URL") + "lists/" + MainWindow.properties.getProperty("MAIL_CHIMP_LIST_ID") + "/members/" + emailHash)
+                .uri(properties.getProperty("MAIL_CHIMP_API_URL") + "lists/" + properties.getProperty("MAIL_CHIMP_LIST_ID") + "/members/" + emailHash)
                 .bodyValue(memberUpdate)
                 .accept(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Basic " + Base64Utils
-                        .encodeToString(("username" + ":" + MainWindow.properties.getProperty("MAIL_CHIMP_API_KEY")).getBytes(UTF_8))).retrieve()
+                        .encodeToString(("username" + ":" + properties.getProperty("MAIL_CHIMP_API_KEY")).getBytes(UTF_8))).retrieve()
                 .bodyToMono(Object.class)
                 .block();
         return postResponse;
@@ -127,11 +134,11 @@ public class MailChimpService {
     private Object createMember(MailChimpMember newMember, HttpClient httpClient) {
         Object postResponse = WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(httpClient)).build().post()
-                .uri(MainWindow.properties.getProperty("MAIL_CHIMP_API_URL") + "lists/" + MainWindow.properties.getProperty("MAIL_CHIMP_LIST_ID") + "/members")
+                .uri(properties.getProperty("MAIL_CHIMP_API_URL") + "lists/" + properties.getProperty("MAIL_CHIMP_LIST_ID") + "/members")
                 .bodyValue(newMember)
                 .accept(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Basic " + Base64Utils
-                        .encodeToString(("username" + ":" + MainWindow.properties.getProperty("MAIL_CHIMP_API_KEY")).getBytes(UTF_8))).retrieve()
+                        .encodeToString(("username" + ":" + properties.getProperty("MAIL_CHIMP_API_KEY")).getBytes(UTF_8))).retrieve()
                 .bodyToMono(Object.class)
                 .block();
         return postResponse;

@@ -1,6 +1,5 @@
 package app.input;
 
-import app.gui.MainWindow;
 import app.model.XlsxModel;
 import app.model.helloasso.*;
 import app.process.ConvertService;
@@ -24,6 +23,8 @@ import java.util.*;
 
 @Service
 public class HelloAssoService {
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+
     // Tarifs :
     public static final String REDUIT = "RÉDUIT";
     public static final String NORMAL = "NORMAL";
@@ -33,13 +34,16 @@ public class HelloAssoService {
     public static final String TARIF = "tarif";
     public static final String ENTREPRISE = "entreprise";
     public static final String CODE_POSTAL = "Code Postal";
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     private ConvertService convertService;
     private Properties properties;
+    private StringBuilder importResult;
 
-    public HelloAssoService(ConvertService convertService) {
+
+    public HelloAssoService(ConvertService convertService, Properties properties, StringBuilder importResult) {
         this.convertService = convertService;
+        this.properties = properties;
+        this.importResult = importResult;
     }
 
     private String getHelloAssoAccessToken() throws IllegalAccessException {
@@ -86,7 +90,7 @@ public class HelloAssoService {
     }
 
     public void getPaymentsFor(int nbDays) throws IllegalAccessException {
-        this.properties = MainWindow.properties;
+        this.properties = properties;
 
         String token = getHelloAssoAccessToken();
 
@@ -99,7 +103,7 @@ public class HelloAssoService {
 
             if (formResponse.getBody().getData() != null) {
                 List<XlsxModel> xlsxModels = new ArrayList<>();
-                MainWindow.importResult.append("Les adhésions suivantes ont été trouvées dans Hello Asso : ");
+                importResult.append("Les adhésions suivantes ont été trouvées dans Hello Asso : ");
 
                 for (HelloAssoPayment helloAssoPayment : formResponse.getBody().getData()) {
                     // besoin des champs additionnels
@@ -115,14 +119,14 @@ public class HelloAssoService {
                     xlsxModel.setTarif(extraFields.get(TARIF));
                     xlsxModel.setEntrepriseProjet(extraFields.get(ENTREPRISE));
                     xlsxModels.add(xlsxModel);
-                    MainWindow.importResult.append("<br/>");
-                    MainWindow.importResult.append(xlsxModel);
+                    importResult.append("<br/>");
+                    importResult.append(xlsxModel);
 
                 }
                 convertService.convert(System.getProperty("user.dir"), xlsxModels);
 
             }else {
-                MainWindow.importResult.append("Aucune résultat trouvé dans Hello Asso");
+                importResult.append("Aucune résultat trouvé dans Hello Asso");
             }
             LOGGER.info(formResponse.getBody().getData().toString());
         } catch (WebClientException exception) {

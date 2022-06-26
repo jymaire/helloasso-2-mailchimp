@@ -1,6 +1,5 @@
 package app.process;
 
-import app.gui.MainWindow;
 import app.model.CsvMailChimpModel;
 import app.model.XlsxModel;
 import app.model.mailchimp.MailChimpMember;
@@ -24,11 +23,11 @@ public class ConvertService {
     private MailChimpService mailChimpService;
     private Properties properties;
 
-    public ConvertService(XlsxService xlsxService, CSVprocessing csvProcessing, MailChimpService mailChimpService) {
+    public ConvertService(XlsxService xlsxService, CSVprocessing csvProcessing, MailChimpService mailChimpService, Properties properties) {
         this.xlsxService = xlsxService;
         this.csvProcessing = csvProcessing;
         this.mailChimpService = mailChimpService;
-        this.properties = MainWindow.properties;
+        this.properties = properties;
     }
 
     public String readAndConvertHelloAssoXlsxToCsvMailchimp(String path, String outputPath) {
@@ -76,12 +75,12 @@ public class ConvertService {
                 } else {
                     LOGGER.info("paiment non valide :" + xlsxModel.getStatus());
                 }
-            }catch (Exception e){
-                LOGGER.error("Erreur : {}",e.getMessage());
+            } catch (Exception e) {
+                LOGGER.error("Erreur : {}", e.getMessage());
             }
         }
         LOGGER.debug("sortie : " + outputPath);
-        if ("true".equals(MainWindow.properties.getProperty("MAIL_CHIMP_AUTO"))) {
+        if ("true".equals(properties.getProperty("MAIL_CHIMP_AUTO"))) {
             mailChimpService.addMembers(mailChimpMembers);
         }
         csvProcessing.createCSVfile(csvMailChimpModels, outputPath);

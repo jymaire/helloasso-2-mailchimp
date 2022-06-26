@@ -6,6 +6,7 @@ import app.model.BenevoleCsv;
 import app.output.BenevoleWriter;
 import app.output.MailChimpService;
 import app.process.ConvertService;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -31,20 +32,18 @@ public class MainWindow {
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private ConvertService convertService;
     private HelloAssoService helloAssoService;
-    private MailChimpService mailChimpService;
     private BenevolatCSVReader csvReader;
     private BenevoleWriter benevoleWriter;
     public static Properties properties;
     private String existingFilePath = null;
+    private StringBuilder importResult;
 
-    public static StringBuilder importResult = new StringBuilder();
-
-    public MainWindow(HelloAssoService helloAssoService, ConvertService convertService, MailChimpService mailChimpService, BenevolatCSVReader csvReader, BenevoleWriter benevoleWriter) {
+    public MainWindow(HelloAssoService helloAssoService, ConvertService convertService, BenevolatCSVReader csvReader, BenevoleWriter benevoleWriter, StringBuilder importResult) {
         this.convertService = convertService;
         this.helloAssoService = helloAssoService;
-        this.mailChimpService = mailChimpService;
         this.csvReader = csvReader;
         this.benevoleWriter = benevoleWriter;
+        this.importResult = importResult;
     }
 
     @PostConstruct
