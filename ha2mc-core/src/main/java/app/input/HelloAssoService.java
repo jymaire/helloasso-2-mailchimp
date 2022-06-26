@@ -5,6 +5,7 @@ import app.model.helloasso.*;
 import app.process.ConvertService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -39,6 +40,18 @@ public class HelloAssoService {
     private Properties properties;
     private StringBuilder importResult;
 
+    @Value("${HELLO_ASSO_CLIENT_ID}")
+    private String helloAssoUrl;
+    @Value("${HELLO_ASSO_CLIENT_ID}")
+    private String helloAssoClientId;
+    @Value("${HELLO_ASSO_CLIENT_SECRET}")
+    private String helloAssoClientSecret;
+    @Value("${HELLO_ASSO_FORM}")
+    private String helloAssoForm;
+    @Value("${HELLO_ASSO_ORGANIZATION}")
+    private String helloAssoOrganization;
+    @Value("${HELLO_ASSO_API_URL}")
+    private String helloAssoAPIurl;
 
     public HelloAssoService(ConvertService convertService, Properties properties, StringBuilder importResult) {
         this.convertService = convertService;
@@ -48,15 +61,15 @@ public class HelloAssoService {
 
     private String getHelloAssoAccessToken() throws IllegalAccessException {
         MultiValueMap accessTokenBody = new LinkedMultiValueMap();
-        accessTokenBody.add("client_id", properties.getProperty("HELLO_ASSO_CLIENT_ID"));
-        accessTokenBody.add("client_secret", properties.getProperty("HELLO_ASSO_CLIENT_SECRET"));
+        accessTokenBody.add("client_id", helloAssoClientId);
+        accessTokenBody.add("client_secret", helloAssoClientSecret);
         accessTokenBody.add("grant_type", "client_credentials");
         HttpClient httpClient = HttpClient
                 .create()
                 .wiretap(true);
         HelloAssoToken accessTokenResponse = WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(httpClient)).build().post()
-                .uri(properties.getProperty("HELLO_ASSO_API_URL") + "oauth2/token")
+                .uri(helloAssoUrl + "oauth2/token")
                 .accept(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData(accessTokenBody))
                 .accept(MediaType.APPLICATION_JSON)
@@ -74,8 +87,8 @@ public class HelloAssoService {
 
     public ResponseEntity<HelloAssoFormPayments> callPaymentFormHistory(String accessToken, LocalDateTime now, LocalDateTime beginDate) {
         return WebClient.builder().build().get()
-                .uri(properties.getProperty("HELLO_ASSO_API_URL") + "v5/organizations/" + properties.getProperty("HELLO_ASSO_ORGANIZATION") +
-                        "/forms/Membership/" + properties.getProperty("HELLO_ASSO_FORM") + "/payments?from=" + beginDate + "&to=" + now + "&states=Authorized")
+                .uri(helloAssoUrl + "v5/organizations/" + helloAssoOrganization +
+                        "/forms/Membership/" + helloAssoForm + "/payments?from=" + beginDate + "&to=" + now + "&states=Authorized")
                 .header("authorization", "Bearer " + accessToken)
                 .retrieve()
                 .toEntity(HelloAssoFormPayments.class)
@@ -84,14 +97,12 @@ public class HelloAssoService {
 
     public void disconnect(String token) {
         final WebClient.ResponseSpec retrieve = WebClient.builder().build().get()
-                .uri(properties.getProperty("HELLO_ASSO_API_URL") + "oauth2/disconnect")
+                .uri(helloAssoUrl + "oauth2/disconnect")
                 .header("authorization", "Bearer " + token)
                 .retrieve();
     }
 
     public void getPaymentsFor(int nbDays) throws IllegalAccessException {
-        this.properties = properties;
-
         String token = getHelloAssoAccessToken();
 
         LocalDateTime now = LocalDateTime.now();
@@ -140,7 +151,7 @@ public class HelloAssoService {
     private Map<String, String> getExtraFields(int orderId, String token) {
         Map<String, String> extraFields = new HashMap<>();
         final ResponseEntity<HelloAssoOrder> orderResponse = WebClient.builder().build().get()
-                .uri(properties.get("HELLO_ASSO_API_URL") + "v5/orders/" + orderId)
+                .uri(helloAssoAPIurl + "v5/orders/" + orderId)
                 .header("authorization", "Bearer " + token)
                 .retrieve()
                 .toEntity(HelloAssoOrder.class)

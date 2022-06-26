@@ -4,9 +4,9 @@ import app.input.BenevolatCSVReader;
 import app.input.HelloAssoService;
 import app.model.BenevoleCsv;
 import app.output.BenevoleWriter;
-import app.output.MailChimpService;
 import app.process.ConvertService;
-import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -21,7 +21,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +40,15 @@ public class MainWindow {
     public static Properties properties;
     private String existingFilePath = null;
     private StringBuilder importResult;
+    private ConfigurableEnvironment configurableEnvironment;
 
-    public MainWindow(HelloAssoService helloAssoService, ConvertService convertService, BenevolatCSVReader csvReader, BenevoleWriter benevoleWriter, StringBuilder importResult) {
+    public MainWindow(HelloAssoService helloAssoService, ConvertService convertService, BenevolatCSVReader csvReader, BenevoleWriter benevoleWriter, StringBuilder importResult, ConfigurableEnvironment configurableEnvironment) {
         this.convertService = convertService;
         this.helloAssoService = helloAssoService;
         this.csvReader = csvReader;
         this.benevoleWriter = benevoleWriter;
         this.importResult = importResult;
+        this.configurableEnvironment = configurableEnvironment;
     }
 
     @PostConstruct
@@ -167,7 +172,15 @@ public class MainWindow {
         String absoluteCurrentPath = currentRelativePath.toAbsolutePath().toString();
         Properties prop = new Properties();
         try {
-            prop.load(new FileReader(absoluteCurrentPath + File.separator + "config.properties"));
+            final Map<String, ?> configuratinFiles = configurableEnvironment.getPropertySources().stream()
+                    .filter(propertySource -> propertySource.getName()
+                            .contains("application.properties"))
+                    .collect(Collectors.toMap(PropertySource::getName, PropertySource::getSource));
+            // Load config.properties only if there is not already an application.properties file loaded automatically
+            // just the time to do the refacto I guess
+            if (configuratinFiles == null || configuratinFiles.isEmpty()){
+                prop.load(new FileReader(absoluteCurrentPath + File.separator + "config.properties"));
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
