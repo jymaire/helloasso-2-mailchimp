@@ -1,7 +1,7 @@
 package app.output;
 
-import app.model.mailchimp.MailChimpMember;
-import app.model.mailchimp.MailChimpMemberUpdate;
+import app.bean.mailchimp.MailChimpMember;
+import app.bean.mailchimp.MailChimpMemberUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;

@@ -1,8 +1,8 @@
 package app.process;
 
-import app.model.CsvMailChimpModel;
-import app.model.XlsxModel;
-import app.model.mailchimp.MailChimpMember;
+import app.bean.CsvMailChimpModel;
+import app.bean.XlsxModel;
+import app.bean.mailchimp.MailChimpMember;
 import app.output.MailChimpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

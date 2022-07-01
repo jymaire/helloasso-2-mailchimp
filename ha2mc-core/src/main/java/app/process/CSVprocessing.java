@@ -1,6 +1,6 @@
 package app.process;
 
-import app.model.CsvMailChimpModel;
+import app.bean.CsvMailChimpModel;
 import com.opencsv.CSVWriter;
 import com.opencsv.CSVWriterBuilder;
 import com.opencsv.ICSVWriter;

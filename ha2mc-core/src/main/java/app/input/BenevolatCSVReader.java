@@ -1,6 +1,6 @@
 package app.input;
 
-import app.model.BenevoleCsv;
+import app.bean.BenevoleCsv;
 import com.opencsv.CSVReader;
 import org.springframework.stereotype.Service;
 

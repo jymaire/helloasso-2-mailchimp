@@ -2,7 +2,7 @@ package app.gui;
 
 import app.input.BenevolatCSVReader;
 import app.input.HelloAssoService;
-import app.model.BenevoleCsv;
+import app.bean.BenevoleCsv;
 import app.output.BenevoleWriter;
 import app.process.ConvertService;
 import org.springframework.core.env.ConfigurableEnvironment;

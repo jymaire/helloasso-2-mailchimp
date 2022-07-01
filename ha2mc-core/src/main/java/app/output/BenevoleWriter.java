@@ -1,6 +1,6 @@
 package app.output;
 
-import app.model.BenevoleCsv;
+import app.bean.BenevoleCsv;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;

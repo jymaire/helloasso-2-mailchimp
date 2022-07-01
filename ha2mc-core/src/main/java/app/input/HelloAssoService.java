@@ -1,7 +1,7 @@
 package app.input;
 
-import app.model.XlsxModel;
-import app.model.helloasso.*;
+import app.bean.XlsxModel;
+import app.bean.helloasso.*;
 import app.process.ConvertService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

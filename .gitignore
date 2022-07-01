@@ -3,3 +3,4 @@
 /ha2mc-desktop/target/
 *.log
 /logs/
+/ha2mc-web/target/
