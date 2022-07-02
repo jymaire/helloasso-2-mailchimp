@@ -143,7 +143,7 @@ public class MainWindow {
                 importResult = new StringBuilder();
                 importResult.append("<html>");
                 try {
-                    helloAssoService.getPaymentsFor((Integer) nbDay.getValue());
+                    helloAssoService.getPaymentsForAndProcess((Integer) nbDay.getValue());
                 } catch (Exception ex) {
                     LOGGER.error(ex.getMessage());
                     LOGGER.error(ex.getStackTrace().toString());

@@ -9,16 +9,17 @@ import re.jmai.entity.Payment;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
-public interface PaymentRepository extends CrudRepository<Payment, Long> {
+public interface PaymentRepository extends CrudRepository<Payment, String> {
 
     @Query("SELECT p FROM Payment p ORDER BY p.date DESC")
     List<Payment> findAll();
 
     @Query("SELECT p.id FROM Payment p")
-    List<Integer> findAllIds();
+    List<String> findAllIds();
 
-    Payment findById(int id);
+    Optional<Payment> findById(String id);
 
     Payment save(@NotNull Payment payment);
 
@@ -36,5 +37,5 @@ public interface PaymentRepository extends CrudRepository<Payment, Long> {
     void deleteById(int paymentIds);
 
     @Query("SELECT p FROM Payment p WHERE p.status = ?1")
-    List<Payment> getByStatus(StatusPaymentEnum status);
+    List<Optional<Payment>> getByStatus(StatusPaymentEnum status);
 }

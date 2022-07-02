@@ -2,6 +2,7 @@ package re.jmai.service;
 
 
 import app.bean.Notification;
+import app.bean.helloasso.HelloAssoPayment;
 import app.bean.helloasso.HelloAssoPaymentStateEnum;
 import app.bean.helloasso.notification.HelloAssoPaymentNotification;
 import app.input.HelloAssoService;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static re.jmai.service.ConfigurationService.MAIL_RECIPIENT;
 import static re.jmai.service.ConfigurationService.PAYMENT_AUTOMATIC_ENABLED;
@@ -48,6 +50,19 @@ public class PaymentService {
         this.helloAssoService = helloAssoService;
     }
 
+    public void savePayments(List<HelloAssoPayment> payments) {
+        for (HelloAssoPayment helloAssoPayment : payments) {
+            Payment payment = Payment.PaymentBuilder.aPayment()
+                    .withDate(helloAssoPayment.getDate())
+                    .withEmail(helloAssoPayment.getPayer().getEmail())
+                    .withPayerFirstName(helloAssoPayment.getPayer().getFirstName())
+                    .withPayerLastName(helloAssoPayment.getPayer().getLastName())
+                    .withId(helloAssoPayment.getId())
+                    .build();
+            paymentRepository.save(payment);
+        }
+    }
+
     public ProcessResult handleNewPayment(ProcessResult processResult, String helloAssoPaymentNotificationWrapper) throws IOException {
 
         if (helloAssoPaymentNotificationWrapper == null) {
@@ -68,7 +83,7 @@ public class PaymentService {
             return processResult;
         }
         Notification notification = validPayment.get(true);
-        final Payment paymentInDatabase = paymentRepository.findById(notification.getId());
+        final Payment paymentInDatabase = paymentRepository.findById(notification.getId()).get();
 
         if (paymentInDatabase == null) {
             // register payment in database (convert cent to euro)
@@ -124,14 +139,14 @@ public class PaymentService {
         return processResult;
     }
 
-    public ProcessResult creditAccount(ProcessResult processResult, int paymentId) {
-        Payment payment = paymentRepository.findById(paymentId);
-        if (payment == null) {
+    public ProcessResult creditAccount(ProcessResult processResult, String paymentId) {
+        Optional<Payment> payment = paymentRepository.findById(paymentId);
+        if (!payment.isPresent()) {
             LOGGER.error("Payment not found : {}", paymentId);
             return processResult;
         }
 
-        creditCyclosAccount(processResult, payment);
+        creditCyclosAccount(processResult, payment.get());
         return processResult;
     }
 
@@ -158,9 +173,9 @@ public class PaymentService {
 
     @Transactional
     public void creditAll() {
-        final List<Payment> paymentsToDo = paymentRepository.getByStatus(StatusPaymentEnum.todo);
-        for (Payment payment : paymentsToDo) {
-            creditCyclosAccount(new ProcessResult(), payment);
+        final List<Optional<Payment>> paymentsToDo = paymentRepository.getByStatus(StatusPaymentEnum.todo);
+        for (Optional<Payment> payment : paymentsToDo) {
+            creditCyclosAccount(new ProcessResult(), payment.get());
         }
     }
 }

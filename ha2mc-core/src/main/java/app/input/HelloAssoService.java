@@ -47,7 +47,7 @@ public class HelloAssoService {
     private Properties properties;
     private StringBuilder importResult;
 
-    @Value("${HELLO_ASSO_CLIENT_ID}")
+    @Value("${HELLO_ASSO_API_URL}")
     private String helloAssoUrl;
     @Value("${HELLO_ASSO_CLIENT_ID}")
     private String helloAssoClientId;
@@ -109,7 +109,30 @@ public class HelloAssoService {
                 .retrieve();
     }
 
-    public void getPaymentsFor(int nbDays) throws IllegalAccessException {
+
+    public List<HelloAssoPayment> getPaymentsFor(int nbDays) throws IllegalAccessException {
+        List<HelloAssoPayment> data = new ArrayList<>();
+        String token = getHelloAssoAccessToken();
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime beginDate = now.minusDays(nbDays);
+
+        ResponseEntity<HelloAssoFormPayments> formResponse;
+        try {
+            formResponse = callPaymentFormHistory(token, now, beginDate);
+
+            if (formResponse.getBody().getData() != null) {
+                data = formResponse.getBody().getData();
+            }
+        }catch (WebClientException exception) {
+            LOGGER.error("error during data fetch : {}", exception.getCause());
+        } finally {
+            disconnect(token);
+        }
+        return data;
+
+    }
+        public void getPaymentsForAndProcess(int nbDays) throws IllegalAccessException {
         String token = getHelloAssoAccessToken();
 
         LocalDateTime now = LocalDateTime.now();

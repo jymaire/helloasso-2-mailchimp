@@ -16,7 +16,7 @@ import static re.jmai.bean.StatusPaymentEnum.todo;
 public class Payment {
     public static final int ERROR_LENGTH = 700;
     @Id
-    private int id;
+    private String id;
     private String date;
     // in euro
     private float amount;
@@ -32,7 +32,7 @@ public class Payment {
     public Payment() {
     }
 
-    public Payment(int id, String date, float amount, String payerFirstName, String payerLastName, String email) {
+    public Payment(String id, String date, float amount, String payerFirstName, String payerLastName, String email) {
         this.id = id;
         this.date = date;
         this.amount = amount;
@@ -44,7 +44,7 @@ public class Payment {
         this.email = email;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -120,7 +120,7 @@ public class Payment {
 
 
     public static final class PaymentBuilder {
-        private int id;
+        private String id;
         private String date;
         private float amount;
         private String payerFirstName;
@@ -136,7 +136,7 @@ public class Payment {
             return new PaymentBuilder();
         }
 
-        public PaymentBuilder withId(int id) {
+        public PaymentBuilder withId(String id) {
             this.id = id;
             return this;
         }

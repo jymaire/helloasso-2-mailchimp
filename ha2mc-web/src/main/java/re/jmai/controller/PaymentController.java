@@ -39,7 +39,7 @@ public class PaymentController {
 
     @Transactional
     @RequestMapping(value = "/list", method = RequestMethod.POST, params = "credit")
-    public String credit(@RequestParam(name = "id") Integer id, Model model) {
+    public String credit(@RequestParam(name = "id") String id, Model model) {
         ProcessResult processResult = new ProcessResult();
         paymentService.creditAccount(processResult, id);
         return "redirect:/list";

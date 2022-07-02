@@ -10,7 +10,7 @@ public class HelloAssoPaymentNotificationBody {
     private HelloAssoOrder order;
     private HelloAssoPayer payer;
     private HelloAssoAmount amount;
-    private int id;
+    private String id;
     private String date;
     private String state;
 
@@ -41,11 +41,11 @@ public class HelloAssoPaymentNotificationBody {
         this.amount = amount;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

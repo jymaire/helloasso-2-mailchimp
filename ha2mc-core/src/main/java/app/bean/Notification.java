@@ -2,7 +2,7 @@ package app.bean;
 
 public class Notification {
 
-    private int id;
+    private String id;
     private String name;
     private String firstName;
     private String email;
@@ -14,11 +14,11 @@ public class Notification {
     public Notification() {
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -79,7 +79,7 @@ public class Notification {
     }
 
     public static final class NotificationBuilder {
-        private int id;
+        private String id;
         private String name;
         private String firstName;
         private String email;
@@ -95,7 +95,7 @@ public class Notification {
             return new NotificationBuilder();
         }
 
-        public NotificationBuilder withId(int id) {
+        public NotificationBuilder withId(String id) {
             this.id = id;
             return this;
         }
