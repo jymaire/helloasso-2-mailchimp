@@ -31,6 +31,9 @@
                 <th>Montant</th>
                 <th>Nom</th>
                 <th>Prenom</th>
+                <th>Tarif</th>
+                <th>CP</th>
+                <th>Entreprise</th>
                 <th>Statut</th>
                 <th>Erreur</th>
                 <th width="10%">Action</th>
@@ -41,6 +44,9 @@
                 <td th:text="${payment.amount}">montant Id</td>
                 <td th:text="${payment.payerLastName}">nom</td>
                 <td th:text="${payment.payerFirstName}">prenom</td>
+                <td th:text="${payment.tarif}">tarif</td>
+                <td th:text="${payment.codePostal}">codePostal</td>
+                <td th:text="${payment.entrepriseProjet}">entrepriseProjet</td>
                 <td th:text="${payment.status.label}">statut</td>
                 <td th:text="${payment.error}">error</td>
                 <td class="align-div">

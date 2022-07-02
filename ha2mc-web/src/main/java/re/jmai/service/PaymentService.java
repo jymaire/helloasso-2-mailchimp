@@ -6,6 +6,7 @@ import app.bean.helloasso.HelloAssoPayment;
 import app.bean.helloasso.HelloAssoPaymentStateEnum;
 import app.bean.helloasso.notification.HelloAssoPaymentNotification;
 import app.input.HelloAssoService;
+import app.output.MailChimpService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,16 +41,17 @@ public class PaymentService {
     private final MailService mailService;
     private final HelloAssoService helloAssoService;
     private final ConverterService converterService;
-
+    private final MailChimpService mailChimpService;
     @Value("${mail.recipient}")
     private String mailRecipient;
 
-    public PaymentService(ConfigurationRepository configurationRepository, PaymentRepository paymentRepository, MailService mailService, HelloAssoService helloAssoService, ConverterService converterService) {
+    public PaymentService(ConfigurationRepository configurationRepository, PaymentRepository paymentRepository, MailService mailService, HelloAssoService helloAssoService, ConverterService converterService, MailChimpService mailChimpService) {
         this.configurationRepository = configurationRepository;
         this.paymentRepository = paymentRepository;
         this.mailService = mailService;
         this.helloAssoService = helloAssoService;
         this.converterService = converterService;
+        this.mailChimpService = mailChimpService;
     }
 
     public void savePayments(List<HelloAssoPayment> payments) {
@@ -141,7 +143,7 @@ public class PaymentService {
             return processResult;
         }
         // Ajout mailchimp
-
+        mailChimpService.addOneMember(converterService.helloAssoToSingleMailChimpMember(payment.get()));
         return processResult;
     }
 

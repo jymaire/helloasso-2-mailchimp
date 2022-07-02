@@ -28,6 +28,10 @@ public class HelloAssoPaymentEntity {
     @Column(length = ERROR_LENGTH)
     private String error;
     private String email;
+    private String tarif;
+    private String codePostal;
+    private String entrepriseProjet;
+    private String helloAssoStatus;
 
 
     public HelloAssoPaymentEntity() {
@@ -97,6 +101,38 @@ public class HelloAssoPaymentEntity {
         this.status = status;
     }
 
+    public String getTarif() {
+        return tarif;
+    }
+
+    public void setTarif(String tarif) {
+        this.tarif = tarif;
+    }
+
+    public String getCodePostal() {
+        return codePostal;
+    }
+
+    public void setCodePostal(String codePostal) {
+        this.codePostal = codePostal;
+    }
+
+    public String getEntrepriseProjet() {
+        return entrepriseProjet;
+    }
+
+    public void setEntrepriseProjet(String entrepriseProjet) {
+        this.entrepriseProjet = entrepriseProjet;
+    }
+
+    public String getHelloAssoStatus() {
+        return helloAssoStatus;
+    }
+
+    public void setHelloAssoStatus(String helloAssoStatus) {
+        this.helloAssoStatus = helloAssoStatus;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -120,62 +156,102 @@ public class HelloAssoPaymentEntity {
     }
 
 
-    public static final class PaymentBuilder {
+    public static final class HelloAssoPaymentEntityBuilder {
         private String id;
         private String date;
+        // in euro
         private float amount;
         private String payerFirstName;
         private String payerLastName;
         // technical field, to handle purge process
         private LocalDateTime insertionDate;
+        private StatusPaymentEnum status;
+        private String error;
         private String email;
+        private String tarif;
+        private String codePostal;
+        private String entrepriseProjet;
+        private String helloAssoStatus;
 
-        private PaymentBuilder() {
+        private HelloAssoPaymentEntityBuilder() {
         }
 
-        public static PaymentBuilder aPayment() {
-            return new PaymentBuilder();
+        public static HelloAssoPaymentEntityBuilder aHelloAssoPaymentEntity() {
+            return new HelloAssoPaymentEntityBuilder();
         }
 
-        public PaymentBuilder withId(String id) {
+        public HelloAssoPaymentEntityBuilder withId(String id) {
             this.id = id;
             return this;
         }
 
-        public PaymentBuilder withDate(String date) {
+        public HelloAssoPaymentEntityBuilder withDate(String date) {
             this.date = date;
             return this;
         }
 
-        public PaymentBuilder withAmount(float amount) {
+        public HelloAssoPaymentEntityBuilder withAmount(float amount) {
             this.amount = amount;
             return this;
         }
 
-        public PaymentBuilder withPayerFirstName(String payerFirstName) {
+        public HelloAssoPaymentEntityBuilder withPayerFirstName(String payerFirstName) {
             this.payerFirstName = payerFirstName;
             return this;
         }
 
-        public PaymentBuilder withPayerLastName(String payerLastName) {
+        public HelloAssoPaymentEntityBuilder withPayerLastName(String payerLastName) {
             this.payerLastName = payerLastName;
             return this;
         }
 
-        public PaymentBuilder withInsertionDate(LocalDateTime insertionDate) {
+        public HelloAssoPaymentEntityBuilder withInsertionDate(LocalDateTime insertionDate) {
             this.insertionDate = insertionDate;
             return this;
         }
 
-        public PaymentBuilder withEmail(String email) {
+        public HelloAssoPaymentEntityBuilder withStatus(StatusPaymentEnum status) {
+            this.status = status;
+            return this;
+        }
+
+        public HelloAssoPaymentEntityBuilder withError(String error) {
+            this.error = error;
+            return this;
+        }
+
+        public HelloAssoPaymentEntityBuilder withEmail(String email) {
             this.email = email;
             return this;
         }
 
+        public HelloAssoPaymentEntityBuilder withTarif(String tarif) {
+            this.tarif = tarif;
+            return this;
+        }
+
+        public HelloAssoPaymentEntityBuilder withCodePostal(String codePostal) {
+            this.codePostal = codePostal;
+            return this;
+        }
+
+        public HelloAssoPaymentEntityBuilder withEntrepriseProjet(String entrepriseProjet) {
+            this.entrepriseProjet = entrepriseProjet;
+            return this;
+        }
+        public HelloAssoPaymentEntityBuilder withHelloAssoStatus(String helloAssoStatus) {
+            this.helloAssoStatus = helloAssoStatus;
+            return this;
+        }
         public HelloAssoPaymentEntity build() {
-            HelloAssoPaymentEntity payment = new HelloAssoPaymentEntity(id, date, amount, payerFirstName, payerLastName, email);
-            payment.insertionDate = this.insertionDate;
-            return payment;
+            HelloAssoPaymentEntity helloAssoPaymentEntity = new HelloAssoPaymentEntity(id, date, amount, payerFirstName, payerLastName, email);
+            helloAssoPaymentEntity.setInsertionDate(insertionDate);
+            helloAssoPaymentEntity.setStatus(status);
+            helloAssoPaymentEntity.setError(error);
+            helloAssoPaymentEntity.setTarif(tarif);
+            helloAssoPaymentEntity.setCodePostal(codePostal);
+            helloAssoPaymentEntity.setEntrepriseProjet(entrepriseProjet);
+            return helloAssoPaymentEntity;
         }
     }
 }

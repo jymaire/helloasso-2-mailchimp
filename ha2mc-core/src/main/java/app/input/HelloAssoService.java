@@ -66,7 +66,7 @@ public class HelloAssoService {
         this.importResult = importResult;
     }
 
-    private String getHelloAssoAccessToken() throws IllegalAccessException {
+    public String getHelloAssoAccessToken() throws IllegalAccessException {
         MultiValueMap accessTokenBody = new LinkedMultiValueMap();
         accessTokenBody.add("client_id", helloAssoClientId);
         accessTokenBody.add("client_secret", helloAssoClientSecret);
@@ -178,7 +178,7 @@ public class HelloAssoService {
         }
     }
 
-    private Map<String, String> getExtraFields(int orderId, String token) {
+    public Map<String, String> getExtraFields(int orderId, String token) {
         Map<String, String> extraFields = new HashMap<>();
         final ResponseEntity<HelloAssoOrder> orderResponse = WebClient.builder().build().get()
                 .uri(helloAssoAPIurl + "v5/orders/" + orderId)
