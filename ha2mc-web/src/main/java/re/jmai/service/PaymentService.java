@@ -142,8 +142,14 @@ public class PaymentService {
             LOGGER.error("Payment not found : {}", paymentId);
             return processResult;
         }
-        // Ajout mailchimp
-        mailChimpService.addOneMember(converterService.helloAssoToSingleMailChimpMember(payment.get()));
+        try {
+            mailChimpService.addOneMember(converterService.helloAssoToSingleMailChimpMember(payment.get()));
+            processResult.setStatusPayment(StatusPaymentEnum.success);
+        }catch (Exception e){
+            LOGGER.error("Erreur pendant l'ajout MailChimp : {}",e.getMessage());
+            processResult.getErrors().add(e.getMessage());
+            sendErrorEmail(processResult,paymentId);
+        }
         return processResult;
     }
 
@@ -160,7 +166,7 @@ public class PaymentService {
         return processResult;
     }
 
-    public void sendErrorEmail(ProcessResult processResult, int paymentId) {
+    public void sendErrorEmail(ProcessResult processResult, String paymentId) {
         if (!StatusPaymentEnum.success.equals(processResult.getStatusPayment())) {
             String body = "Liste des erreurs pour le paiement " + paymentId + ": \n " + processResult.getErrors().toString();
             String ERROR_SUBJECT = "[Hellos] Erreur lors du traitement";
