@@ -1,30 +1,32 @@
 package re.jmai.entity;
 
+import org.hibernate.annotations.RowId;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
 public class Configuration {
-
     @Id
-    private String key;
+    private String configKey;
+
     private String value;
 
     public Configuration() {
     }
 
-    public Configuration(String key, String value) {
-        this.key = key;
+    public Configuration(String configKey, String value) {
+        this.configKey = configKey;
         this.value = value;
     }
 
-    public String getKey() {
-        return key;
+    public String getConfigKey() {
+        return configKey;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setConfigKey(String configKey) {
+        this.configKey = configKey;
     }
 
     public String getValue() {
@@ -38,7 +40,7 @@ public class Configuration {
     @Override
     public String toString() {
         return "Configuration{" +
-                "key='" + key + '\'' +
+                "configKey='" + configKey + '\'' +
                 ", value='" + value + '\'' +
                 '}';
     }
@@ -48,12 +50,12 @@ public class Configuration {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Configuration that = (Configuration) o;
-        return Objects.equals(key, that.key) &&
+        return Objects.equals(configKey, that.configKey) &&
                 Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(key, value);
+        return Objects.hash(configKey, value);
     }
 }

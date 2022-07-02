@@ -30,7 +30,7 @@ public class AdminController {
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
     public AdminConfig configuration(Model model) {
         var all = configurationService.findAll();
-        AdminConfig adminConfig = new AdminConfig(Boolean.parseBoolean(all.get(PAYMENT_CYCLOS_ENABLED)), Boolean.parseBoolean(all.get(PAYMENT_AUTOMATIC_ENABLED)), all.get(MAIL_RECIPIENT));
+        AdminConfig adminConfig = new AdminConfig(Boolean.parseBoolean(all.get(PAYMENT_AUTOMATIC_ENABLED)), all.get(MAIL_RECIPIENT));
         model.addAttribute("adminConfig", adminConfig);
         return adminConfig;
     }

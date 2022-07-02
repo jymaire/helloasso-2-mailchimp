@@ -1,10 +1,10 @@
 package re.jmai.service;
 
-import app.bean.helloasso.notification.HelloAssoPaymentNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import re.jmai.bean.Notification;
+import re.jmai.bean.helloasso.notification.HelloAssoPaymentNotification;
 
 import java.io.IOException;
 import java.util.HashMap;

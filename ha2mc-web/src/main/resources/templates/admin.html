@@ -30,10 +30,6 @@
 </div>
 <div class="config">
     <form method="post" th:action="@{/admin}" th:object="${adminConfig}">
-        <div class="un"><label> Activer paiements vers Cyclos :</label> <input name="enable-cyclos"
-                                                                               th:field="*{paymentCyclosEnabled}"
-                                                                               type="checkbox"/>
-        </div>
         <div class="un"><label> Activer paiements automatiques : <input name="enable-automatic"
                                                                         th:field="*{paymentAutomaticEnabled}"
                                                                         type="checkbox"/>
