@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import re.jmai.bean.ProcessResult;
 import re.jmai.bean.StatusPaymentEnum;
 import re.jmai.entity.Configuration;
-import re.jmai.entity.Payment;
+import re.jmai.entity.HelloAssoPaymentEntity;
 import re.jmai.repository.ConfigurationRepository;
 import re.jmai.repository.PaymentRepository;
 
@@ -39,27 +39,22 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final MailService mailService;
     private final HelloAssoService helloAssoService;
+    private final ConverterService converterService;
 
     @Value("${mail.recipient}")
     private String mailRecipient;
 
-    public PaymentService(ConfigurationRepository configurationRepository, PaymentRepository paymentRepository, MailService mailService, HelloAssoService helloAssoService) {
+    public PaymentService(ConfigurationRepository configurationRepository, PaymentRepository paymentRepository, MailService mailService, HelloAssoService helloAssoService, ConverterService converterService) {
         this.configurationRepository = configurationRepository;
         this.paymentRepository = paymentRepository;
         this.mailService = mailService;
         this.helloAssoService = helloAssoService;
+        this.converterService = converterService;
     }
 
     public void savePayments(List<HelloAssoPayment> payments) {
         for (HelloAssoPayment helloAssoPayment : payments) {
-            Payment payment = Payment.PaymentBuilder.aPayment()
-                    .withDate(helloAssoPayment.getDate())
-                    .withEmail(helloAssoPayment.getPayer().getEmail())
-                    .withPayerFirstName(helloAssoPayment.getPayer().getFirstName())
-                    .withPayerLastName(helloAssoPayment.getPayer().getLastName())
-                    .withId(helloAssoPayment.getId())
-                    .build();
-            paymentRepository.save(payment);
+            paymentRepository.save(converterService.helloAssoToEntity(helloAssoPayment));
         }
     }
 
@@ -83,13 +78,13 @@ public class PaymentService {
             return processResult;
         }
         Notification notification = validPayment.get(true);
-        final Payment paymentInDatabase = paymentRepository.findById(notification.getId()).get();
+        final HelloAssoPaymentEntity paymentInDatabase = paymentRepository.findById(notification.getId()).get();
 
         if (paymentInDatabase == null) {
             // register payment in database (convert cent to euro)
-            Payment payment = new Payment(notification.getId(), notification.getDate(), (float) notification.getAmount() / 100,
+            HelloAssoPaymentEntity payment = new HelloAssoPaymentEntity(notification.getId(), notification.getDate(), (float) notification.getAmount() / 100,
                     notification.getFirstName(), notification.getName(), notification.getEmail());
-            Payment paymentSaved = paymentRepository.save(payment);
+            HelloAssoPaymentEntity paymentSaved = paymentRepository.save(payment);
 
             if ("true".equals(configurationRepository.findById(PAYMENT_AUTOMATIC_ENABLED).orElse(new Configuration(PAYMENT_AUTOMATIC_ENABLED, "false")).getValue())) {
                 // Check date
@@ -140,17 +135,17 @@ public class PaymentService {
     }
 
     public ProcessResult creditAccount(ProcessResult processResult, String paymentId) {
-        Optional<Payment> payment = paymentRepository.findById(paymentId);
+        Optional<HelloAssoPaymentEntity> payment = paymentRepository.findById(paymentId);
         if (!payment.isPresent()) {
             LOGGER.error("Payment not found : {}", paymentId);
             return processResult;
         }
+        // Ajout mailchimp
 
-        creditCyclosAccount(processResult, payment.get());
         return processResult;
     }
 
-    private ProcessResult creditCyclosAccount(ProcessResult processResult, Payment payment) {
+    private ProcessResult creditCyclosAccount(ProcessResult processResult, HelloAssoPaymentEntity payment) {
         /*processResult = cyclosService.creditAccount(processResult, payment.getId());
         payment.setStatus(processResult.getStatusPayment());
         if (!processResult.getErrors().isEmpty() && processResult.getErrors().toString().length() > Payment.ERROR_LENGTH) {
@@ -173,8 +168,8 @@ public class PaymentService {
 
     @Transactional
     public void creditAll() {
-        final List<Optional<Payment>> paymentsToDo = paymentRepository.getByStatus(StatusPaymentEnum.todo);
-        for (Optional<Payment> payment : paymentsToDo) {
+        final List<Optional<HelloAssoPaymentEntity>> paymentsToDo = paymentRepository.getByStatus(StatusPaymentEnum.todo);
+        for (Optional<HelloAssoPaymentEntity> payment : paymentsToDo) {
             creditCyclosAccount(new ProcessResult(), payment.get());
         }
     }

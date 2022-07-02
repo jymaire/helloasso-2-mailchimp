@@ -47,7 +47,7 @@ public class MailChimpService {
         return results.toString();
     }
 
-    private Object addOneMember(MailChimpMember newMember) {
+    public Object addOneMember(MailChimpMember newMember) {
         boolean memberAddedSuccessfully = false;
         try {
             HttpClient httpClient = HttpClient

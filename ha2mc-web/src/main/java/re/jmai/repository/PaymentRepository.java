@@ -5,37 +5,37 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import re.jmai.bean.StatusPaymentEnum;
-import re.jmai.entity.Payment;
+import re.jmai.entity.HelloAssoPaymentEntity;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface PaymentRepository extends CrudRepository<Payment, String> {
+public interface PaymentRepository extends CrudRepository<HelloAssoPaymentEntity, String> {
 
-    @Query("SELECT p FROM Payment p ORDER BY p.date DESC")
-    List<Payment> findAll();
+    @Query("SELECT p FROM HelloAssoPaymentEntity p ORDER BY p.date DESC")
+    List<HelloAssoPaymentEntity> findAll();
 
-    @Query("SELECT p.id FROM Payment p")
+    @Query("SELECT p.id FROM HelloAssoPaymentEntity p")
     List<String> findAllIds();
 
-    Optional<Payment> findById(String id);
+    Optional<HelloAssoPaymentEntity> findById(String id);
 
-    Payment save(@NotNull Payment payment);
+    HelloAssoPaymentEntity save(@NotNull HelloAssoPaymentEntity payment);
 
     @Query("SELECT id " +
-            "FROM Payment p " +
+            "FROM HelloAssoPaymentEntity p " +
             "WHERE p.insertionDate < ?1")
     List<Integer> findIdsByInsertionDateBefore(@NotNull LocalDateTime date);
 
     @Modifying
-    @Query("DELETE FROM Payment p WHERE p.id IN ?1")
-    void deleteById(List<Integer> paymentIds);
+    @Query("DELETE FROM HelloAssoPaymentEntity p WHERE p.id IN ?1")
+    void deleteById(List<String> paymentIds);
 
     @Modifying
-    @Query("DELETE FROM Payment p WHERE p.id = ?1")
-    void deleteById(int paymentIds);
+    @Query("DELETE FROM HelloAssoPaymentEntity p WHERE p.id = ?1")
+    void deleteById(String paymentIds);
 
-    @Query("SELECT p FROM Payment p WHERE p.status = ?1")
-    List<Optional<Payment>> getByStatus(StatusPaymentEnum status);
+    @Query("SELECT p FROM HelloAssoPaymentEntity p WHERE p.status = ?1")
+    List<Optional<HelloAssoPaymentEntity>> getByStatus(StatusPaymentEnum status);
 }

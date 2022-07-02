@@ -13,7 +13,7 @@ import static re.jmai.bean.StatusPaymentEnum.todo;
 
 
 @Entity
-public class Payment {
+public class HelloAssoPaymentEntity {
     public static final int ERROR_LENGTH = 700;
     @Id
     private String id;
@@ -29,10 +29,11 @@ public class Payment {
     private String error;
     private String email;
 
-    public Payment() {
+
+    public HelloAssoPaymentEntity() {
     }
 
-    public Payment(String id, String date, float amount, String payerFirstName, String payerLastName, String email) {
+    public HelloAssoPaymentEntity(String id, String date, float amount, String payerFirstName, String payerLastName, String email) {
         this.id = id;
         this.date = date;
         this.amount = amount;
@@ -100,7 +101,7 @@ public class Payment {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Payment payment = (Payment) o;
+        HelloAssoPaymentEntity payment = (HelloAssoPaymentEntity) o;
         return id == payment.id;
     }
 
@@ -171,8 +172,8 @@ public class Payment {
             return this;
         }
 
-        public Payment build() {
-            Payment payment = new Payment(id, date, amount, payerFirstName, payerLastName, email);
+        public HelloAssoPaymentEntity build() {
+            HelloAssoPaymentEntity payment = new HelloAssoPaymentEntity(id, date, amount, payerFirstName, payerLastName, email);
             payment.insertionDate = this.insertionDate;
             return payment;
         }

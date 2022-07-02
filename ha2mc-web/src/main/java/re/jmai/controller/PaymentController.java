@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import re.jmai.bean.ProcessResult;
-import re.jmai.entity.Payment;
+import re.jmai.entity.HelloAssoPaymentEntity;
 import re.jmai.repository.PaymentRepository;
 import re.jmai.service.PaymentService;
 
@@ -25,14 +25,14 @@ public class PaymentController {
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String payments(Model model) {
-        List<Payment> all = paymentRepository.findAll();
+        List<HelloAssoPaymentEntity> all = paymentRepository.findAll();
         model.addAttribute("payments", all);
         return "list";
     }
 
     @Transactional
     @RequestMapping(value = "/list", method = RequestMethod.POST, params = "delete")
-    public String delete(@RequestParam(name = "id") Integer id, Model model) {
+    public String delete(@RequestParam(name = "id") String id, Model model) {
         paymentRepository.deleteById(id);
         return "redirect:/list";
     }
