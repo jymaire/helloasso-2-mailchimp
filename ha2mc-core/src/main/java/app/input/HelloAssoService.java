@@ -1,8 +1,13 @@
 package app.input;
 
+import app.bean.Notification;
 import app.bean.XlsxModel;
 import app.bean.helloasso.*;
+import app.bean.helloasso.notification.HelloAssoPaymentNotification;
+import app.bean.helloasso.notification.HelloAssoPaymentNotificationBody;
 import app.process.ConvertService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,11 +18,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
 import reactor.netty.http.client.HttpClient;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -182,4 +189,69 @@ public class HelloAssoService {
         }
         return extraFields;
     }
+    public Map<Boolean, Notification> isValidPayment(HelloAssoPaymentNotification helloAssoPaymentNotification) throws IOException {
+        Map<Boolean, Notification> end = new HashMap<>();
+        if (helloAssoPaymentNotification == null || helloAssoPaymentNotification.getData() == null || helloAssoPaymentNotification.getEventType() == null) {
+            LOGGER.debug("Empty input (must be scam)");
+            end.put(false, null);
+            return end;
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        HelloAssoPaymentNotificationBody helloAssoPayment;
+        Notification notification;
+        try {
+            if (helloAssoPaymentNotification.getEventType().equals("Payment")) {
+                byte[] json = objectMapper.writeValueAsBytes(helloAssoPaymentNotification.getData());
+                helloAssoPayment = objectMapper.readValue(json, HelloAssoPaymentNotificationBody.class);
+
+                notification = Notification.NotificationBuilder.aNotification()
+                        .withAmount(helloAssoPayment.getAmount().getTotal())
+                        .withDate(helloAssoPayment.getDate())
+                        .withEmail(helloAssoPayment.getPayer().getEmail())
+                        .withFirstName(helloAssoPayment.getPayer().getFirstName())
+                        .withName(helloAssoPayment.getPayer().getLastName())
+                        .withFormSlug(helloAssoPayment.getOrder().getFormSlug())
+                        .withId(helloAssoPayment.getId())
+                        .build();
+            } else if (helloAssoPaymentNotification.getEventType().equals("Order")) {
+                // both a payment and an order notifications are sent, only process one
+                LOGGER.debug("do not prcess order, in order to avoid double credit");
+                end.put(false, null);
+                return end;
+            } else {
+                LOGGER.error("Error during event type choice : {}", helloAssoPaymentNotification);
+                end.put(false, null);
+                return end;
+            }
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Error during conversion : {}", e.getMessage());
+            end.put(false, null);
+            return end;
+        }
+
+        if (!helloAssoForm.equals(notification.getFormSlug())) {
+            LOGGER.error("Invalid form slug, the body is : {}", helloAssoPaymentNotification.getData());
+            end.put(false, null);
+            return end;
+        }
+        if (StringUtils.isEmpty(notification.getDate())) {
+            LOGGER.error("Date not set : {}", helloAssoPaymentNotification);
+            end.put(false, null);
+            return end;
+        }
+
+        // convert date to an easier format to read for human
+        String dateWithEasyToReadFormat = formatDate(notification.getDate());
+        notification.setDate(dateWithEasyToReadFormat);
+        notification.setState(helloAssoPayment.getState());
+        end.put(true, notification);
+        return end;
+    }
+    private String formatDate(String date) {
+        final LocalDateTime dateTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        return dateTime.format(dateTimeFormatter);
+    }
+
+
 }

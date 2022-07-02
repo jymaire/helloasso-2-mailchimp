@@ -11,6 +11,7 @@ public class HelloAssoOrder {
     private List<HelloAssoOrderItem> items;
     private List<HelloAssoPayment> payments;
     private int id;
+    private String formSlug;
 
 
     public HelloAssoOrder() {
@@ -47,7 +48,13 @@ public class HelloAssoOrder {
     public void setId(int id) {
         this.id = id;
     }
+    public String getFormSlug() {
+        return formSlug;
+    }
 
+    public void setFormSlug(String formSlug) {
+        this.formSlug = formSlug;
+    }
     @Override
     public String toString() {
         return "HelloAssoOrder{" +

@@ -1,5 +1,6 @@
 package re.jmai.controller;
 
+import app.input.HelloAssoService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import re.jmai.bean.AdminConfig;
 import re.jmai.service.ConfigurationService;
-import re.jmai.service.HelloAssoService;
 
-import static re.jmai.service.ConfigurationService.*;
+import static re.jmai.service.ConfigurationService.MAIL_RECIPIENT;
+import static re.jmai.service.ConfigurationService.PAYMENT_AUTOMATIC_ENABLED;
 
 @Controller
 public class AdminController {
@@ -45,7 +46,7 @@ public class AdminController {
     @Transactional
     @RequestMapping(value = "/fetch", method = RequestMethod.GET)
     public String fetchDataFromHelloAsso(Model model) throws IllegalAccessException {
-        //helloAssoService.getPaymentsFor(nbDaysToFetch);
+        helloAssoService.getPaymentsFor(nbDaysToFetch);
         return "redirect:/list";
     }
 }

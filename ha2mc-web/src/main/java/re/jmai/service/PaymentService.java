@@ -1,17 +1,18 @@
 package re.jmai.service;
 
 
+import app.bean.Notification;
+import app.bean.helloasso.HelloAssoPaymentStateEnum;
+import app.bean.helloasso.notification.HelloAssoPaymentNotification;
+import app.input.HelloAssoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import re.jmai.bean.Notification;
 import re.jmai.bean.ProcessResult;
 import re.jmai.bean.StatusPaymentEnum;
-import re.jmai.bean.helloasso.HelloAssoPaymentStateEnum;
-import re.jmai.bean.helloasso.notification.HelloAssoPaymentNotification;
 import re.jmai.entity.Configuration;
 import re.jmai.entity.Payment;
 import re.jmai.repository.ConfigurationRepository;

@@ -1,4 +1,4 @@
-package re.jmai.bean;
+package app.bean;
 
 public class Notification {
 
