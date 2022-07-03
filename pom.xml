@@ -9,6 +9,8 @@
   <version>0.0.1-SNAPSHOT</version>
     <modules>
         <module>ha2mc-web</module>
+        <module>ha2mc-core</module>
+        <module>ha2mc-desktop</module>
     </modules>
     <packaging>pom</packaging>
  

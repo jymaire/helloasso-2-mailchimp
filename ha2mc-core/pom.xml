@@ -5,14 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>re.jmai</groupId>
-        <artifactId>ha2mc-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <artifactId>ha2mc-parent</artifactId>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>re.jmai</groupId>
     <artifactId>ha2mc-core</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

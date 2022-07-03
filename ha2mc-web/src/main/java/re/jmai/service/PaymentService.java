@@ -154,6 +154,4 @@ public class PaymentService {
             mailService.sendEmail(configurationRepository.findById(MAIL_RECIPIENT).get().getValue(), ERROR_SUBJECT, body);
         }
     }
-
-
 }

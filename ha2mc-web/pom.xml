@@ -7,12 +7,10 @@
         <groupId>re.jmai</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>ha2mc-web</artifactId>
-
     <name>ha2mc-web</name>
-
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

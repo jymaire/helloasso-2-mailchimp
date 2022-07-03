@@ -2,7 +2,6 @@ package re.jmai.bean;
 
 public enum StatusPaymentEnum {
     todo("À faire"),
-    tooLate("En retard"),
     success("Succès"),
     successAuto("Succès (automatique)"),
     fail("Echec"),
