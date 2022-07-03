@@ -80,9 +80,9 @@ public class PaymentService {
             return processResult;
         }
         Notification notification = validPayment.get(true);
-        final HelloAssoPaymentEntity paymentInDatabase = paymentRepository.findById(notification.getId()).get();
+        final Optional<HelloAssoPaymentEntity> paymentInDatabaseOptional = paymentRepository.findById(notification.getId());
 
-        if (paymentInDatabase == null) {
+        if (paymentInDatabaseOptional.isEmpty()) {
             // register payment in database (convert cent to euro)
             HelloAssoPaymentEntity payment = new HelloAssoPaymentEntity(notification.getId(), notification.getDate(), (float) notification.getAmount() / 100,
                     notification.getFirstName(), notification.getName(), notification.getEmail());
@@ -97,35 +97,26 @@ public class PaymentService {
                 } catch (Exception e) {
                     LOGGER.error("Error parsing date in {}", payment);
                 }
-                if (paymentDate != null && LocalDateTime.now().isAfter(paymentDate.plusHours(NUMBER_LATE_HOURS_ACCEPTED))) {
+                 if (HelloAssoPaymentStateEnum.Waiting.name().equals(notification.getState())) {
                     final Configuration mailRecipientConfiguration = configurationRepository.findById(MAIL_RECIPIENT)
                             .orElse(new Configuration(MAIL_RECIPIENT, mailRecipient));
 
-                    mailService.sendEmail(mailRecipientConfiguration.getValue(), "[Hellos] Paiement en retard",
-                            "Un paiement a été reçu en retard.\nId : " + payment.getId());
-                    processResult.setStatusPayment(StatusPaymentEnum.tooLate);
-                    return processResult;
-                }
-                if (HelloAssoPaymentStateEnum.Waiting.name().equals(notification.getState())) {
-                    final Configuration mailRecipientConfiguration = configurationRepository.findById(MAIL_RECIPIENT)
-                            .orElse(new Configuration(MAIL_RECIPIENT, mailRecipient));
-
-                    mailService.sendEmail(mailRecipientConfiguration.getValue(), "[Hellos] Paiement en attente",
+                    mailService.sendEmail(mailRecipientConfiguration.getValue(), "[HelloAsso MailChimp] Paiement en attente",
                             "Un paiement a été reçu avec l'état 'Attente'.\nId : " + payment.getId());
                     processResult.setStatusPayment(StatusPaymentEnum.waiting);
                     return processResult;
                 }
 
                 LOGGER.info("automatic payment to be proceed");
-                processResult = creditCyclosAccount(processResult, paymentSaved);
+                processResult =creditAccount(processResult,paymentSaved.getId());
                 final Configuration mailRecipientConfiguration = configurationRepository.findById(MAIL_RECIPIENT)
                         .orElse(new Configuration(MAIL_RECIPIENT, mailRecipient));
                 if (StatusPaymentEnum.success.equals(processResult.getStatusPayment())) {
-                    mailService.sendEmail(mailRecipientConfiguration.getValue(), "[Hellos] Paiement réussi :)",
+                    mailService.sendEmail(mailRecipientConfiguration.getValue(), "[HelloAsso MailChimp] Paiement réussi :)",
                             "Un paiement a été effectué avec succès.\nId : " + paymentSaved.getId());
                     processResult.setStatusPayment(StatusPaymentEnum.successAuto);
                 } else {
-                    mailService.sendEmail(mailRecipientConfiguration.getValue(), "[Hellos] Paiement en échec :(",
+                    mailService.sendEmail(mailRecipientConfiguration.getValue(), "[HelloAsso MailChimp] Paiement en échec :(",
                             "Un paiement n'a pas pu être effectué.\nId : " + paymentSaved.getId());
                 }
             }
@@ -153,32 +144,13 @@ public class PaymentService {
         return processResult;
     }
 
-    private ProcessResult creditCyclosAccount(ProcessResult processResult, HelloAssoPaymentEntity payment) {
-        /*processResult = cyclosService.creditAccount(processResult, payment.getId());
-        payment.setStatus(processResult.getStatusPayment());
-        if (!processResult.getErrors().isEmpty() && processResult.getErrors().toString().length() > Payment.ERROR_LENGTH) {
-            payment.setError(processResult.getErrors().toString().substring(0, Payment.ERROR_LENGTH - 100));
-        } else {
-            payment.setError(processResult.getErrors().toString());
-        }
-        paymentRepository.save(payment);
-        sendErrorEmail(processResult, payment.getId());*/
-        return processResult;
-    }
-
     public void sendErrorEmail(ProcessResult processResult, String paymentId) {
         if (!StatusPaymentEnum.success.equals(processResult.getStatusPayment())) {
             String body = "Liste des erreurs pour le paiement " + paymentId + ": \n " + processResult.getErrors().toString();
-            String ERROR_SUBJECT = "[Hellos] Erreur lors du traitement";
+            String ERROR_SUBJECT = "[HelloAsso MailChimp] Erreur lors du traitement";
             mailService.sendEmail(configurationRepository.findById(MAIL_RECIPIENT).get().getValue(), ERROR_SUBJECT, body);
         }
     }
 
-    @Transactional
-    public void creditAll() {
-        final List<Optional<HelloAssoPaymentEntity>> paymentsToDo = paymentRepository.getByStatus(StatusPaymentEnum.todo);
-        for (Optional<HelloAssoPaymentEntity> payment : paymentsToDo) {
-            creditCyclosAccount(new ProcessResult(), payment.get());
-        }
-    }
+
 }

@@ -22,7 +22,6 @@ import static re.jmai.service.ConfigurationService.PAYMENT_AUTOMATIC_ENABLED;
 @Controller
 public class AdminController {
     private final ConfigurationService configurationService;
-    // à voir si on change le hello asso service pour le remplacer par celui du module core
     private final HelloAssoService helloAssoService;
     private final PaymentService paymentService;
 

@@ -9,6 +9,9 @@ public class Notification {
     private String formSlug;
     private String date;
     private String state;
+    private String codePostal;
+    private String tarif;
+    private String entrepriseProjet;
     private int amount;
 
     public Notification() {
@@ -78,6 +81,30 @@ public class Notification {
         this.state = state;
     }
 
+    public String getCodePostal() {
+        return codePostal;
+    }
+
+    public void setCodePostal(String codePostal) {
+        this.codePostal = codePostal;
+    }
+
+    public String getTarif() {
+        return tarif;
+    }
+
+    public void setTarif(String tarif) {
+        this.tarif = tarif;
+    }
+
+    public String getEntrepriseProjet() {
+        return entrepriseProjet;
+    }
+
+    public void setEntrepriseProjet(String entrepriseProjet) {
+        this.entrepriseProjet = entrepriseProjet;
+    }
+
     public static final class NotificationBuilder {
         private String id;
         private String name;
@@ -86,6 +113,9 @@ public class Notification {
         private String formSlug;
         private String date;
         private String state;
+        private String codePostal;
+        private String tarif;
+        private String entrepriseProjet;
         private int amount;
 
         private NotificationBuilder() {
@@ -130,6 +160,21 @@ public class Notification {
             return this;
         }
 
+        public NotificationBuilder withCodePostal(String codePostal) {
+            this.codePostal = codePostal;
+            return this;
+        }
+
+        public NotificationBuilder withTarif(String tarif) {
+            this.tarif = tarif;
+            return this;
+        }
+
+        public NotificationBuilder withEntrepriseProjet(String entrepriseProjet) {
+            this.entrepriseProjet = entrepriseProjet;
+            return this;
+        }
+
         public NotificationBuilder withAmount(int amount) {
             this.amount = amount;
             return this;
@@ -144,8 +189,28 @@ public class Notification {
             notification.setFormSlug(formSlug);
             notification.setDate(date);
             notification.setState(state);
+            notification.setCodePostal(codePostal);
+            notification.setTarif(tarif);
+            notification.setEntrepriseProjet(entrepriseProjet);
             notification.setAmount(amount);
             return notification;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Notification{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", email='" + email + '\'' +
+                ", formSlug='" + formSlug + '\'' +
+                ", date='" + date + '\'' +
+                ", state='" + state + '\'' +
+                ", codePostal='" + codePostal + '\'' +
+                ", tarif='" + tarif + '\'' +
+                ", entrepriseProjet='" + entrepriseProjet + '\'' +
+                ", amount=" + amount +
+                '}';
     }
 }

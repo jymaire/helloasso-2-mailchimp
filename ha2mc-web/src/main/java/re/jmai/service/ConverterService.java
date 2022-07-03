@@ -1,5 +1,6 @@
 package re.jmai.service;
 
+import app.bean.Notification;
 import app.bean.helloasso.HelloAssoPayment;
 import app.bean.mailchimp.MailChimpMember;
 import app.input.HelloAssoService;
@@ -50,6 +51,13 @@ public class ConverterService {
             if (token != null) helloAssoService.disconnect(token);
         }
         return null;
+    }
+
+    public HelloAssoPaymentEntity notificationToHelloAssoEntity(Notification notification) {
+        // TODO : voir ce qu'on a dans la notif pour extraire l'id de l'order
+        HelloAssoPaymentEntity helloAssoToEntity = new HelloAssoPaymentEntity(notification.getId(), notification.getDate(), (float) notification.getAmount() / 100,
+                notification.getFirstName(), notification.getName(), notification.getEmail());
+        return helloAssoToEntity;
     }
 
     public MailChimpMember helloAssoToSingleMailChimpMember(HelloAssoPaymentEntity helloAssoPayment) {

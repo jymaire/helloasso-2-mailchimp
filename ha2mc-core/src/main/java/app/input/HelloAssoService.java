@@ -124,7 +124,7 @@ public class HelloAssoService {
             if (formResponse.getBody().getData() != null) {
                 data = formResponse.getBody().getData();
             }
-        }catch (WebClientException exception) {
+        } catch (WebClientException exception) {
             LOGGER.error("error during data fetch : {}", exception.getCause());
         } finally {
             disconnect(token);
@@ -132,7 +132,8 @@ public class HelloAssoService {
         return data;
 
     }
-        public void getPaymentsForAndProcess(int nbDays) throws IllegalAccessException {
+
+    public void getPaymentsForAndProcess(int nbDays) throws IllegalAccessException {
         String token = getHelloAssoAccessToken();
 
         LocalDateTime now = LocalDateTime.now();
@@ -166,7 +167,7 @@ public class HelloAssoService {
                 }
                 convertService.convert(System.getProperty("user.dir"), xlsxModels);
 
-            }else {
+            } else {
                 importResult.append("Aucune résultat trouvé dans Hello Asso");
             }
             LOGGER.info(formResponse.getBody().getData().toString());
@@ -188,30 +189,37 @@ public class HelloAssoService {
                 .block();
         if (orderResponse != null && orderResponse.getStatusCode().is2xxSuccessful() && orderResponse.getBody() != null) {
             final List<HelloAssoOrderItem> items = orderResponse.getBody().getItems();
-            if (!CollectionUtils.isEmpty(items)) {
-                for (HelloAssoOrderItem item : items) {
-                    if (REDUIT.equals(item.getName()) || PRO.equals(item.getName()) || NORMAL.equals(item.getName())) {
-                        LOGGER.debug("tarif trouvé");
-                        extraFields.put(TARIF, item.getName());
-                    }
-                    if (!CollectionUtils.isEmpty(item.getCustomFields())) {
-                        for (HelloAssoItemCustomField field : item.getCustomFields()) {
-                            if (PROJETS.equals(field.getName())) {
-                                LOGGER.debug("entreprise trouvée");
-                                extraFields.put(ENTREPRISE, field.getAnswer());
-                            }
-                            if (CODE_POSTAL.equals(field.getName())) {
-                                LOGGER.debug("code postal trouvée");
-                                extraFields.put(CODE_POSTAL, field.getAnswer());
-                            }
-                        }
-                    }
-                }
-
-            }
+            extraFields = extractItemFromOrder(items);
         }
         return extraFields;
     }
+
+    private Map<String, String> extractItemFromOrder(List<HelloAssoOrderItem> items) {
+        Map<String, String> extraFields = new HashMap<>();
+        if (!CollectionUtils.isEmpty(items)) {
+            for (HelloAssoOrderItem item : items) {
+                if (REDUIT.equals(item.getName()) || PRO.equals(item.getName()) || NORMAL.equals(item.getName())) {
+                    LOGGER.debug("tarif trouvé");
+                    extraFields.put(TARIF, item.getName());
+                }
+                if (!CollectionUtils.isEmpty(item.getCustomFields())) {
+                    for (HelloAssoItemCustomField field : item.getCustomFields()) {
+                        if (PROJETS.equals(field.getName())) {
+                            LOGGER.debug("entreprise trouvée");
+                            extraFields.put(ENTREPRISE, field.getAnswer());
+                        }
+                        if (CODE_POSTAL.equals(field.getName())) {
+                            LOGGER.debug("code postal trouvée");
+                            extraFields.put(CODE_POSTAL, field.getAnswer());
+                        }
+                    }
+                }
+            }
+
+        }
+        return extraFields;
+    }
+
     public Map<Boolean, Notification> isValidPayment(HelloAssoPaymentNotification helloAssoPaymentNotification) throws IOException {
         Map<Boolean, Notification> end = new HashMap<>();
         if (helloAssoPaymentNotification == null || helloAssoPaymentNotification.getData() == null || helloAssoPaymentNotification.getEventType() == null) {
@@ -224,9 +232,13 @@ public class HelloAssoService {
         Notification notification;
         try {
             if (helloAssoPaymentNotification.getEventType().equals("Payment")) {
+                LOGGER.info("contenu d'un payment : {}", helloAssoPaymentNotification);
+
                 byte[] json = objectMapper.writeValueAsBytes(helloAssoPaymentNotification.getData());
                 helloAssoPayment = objectMapper.readValue(json, HelloAssoPaymentNotificationBody.class);
-
+                final List<HelloAssoOrderItem> items = helloAssoPayment.getOrder().getItems();
+                Map<String, String> extraFields = extractItemFromOrder(items);
+                LOGGER.info("extra fields from payment notif : {}", extraFields);
                 notification = Notification.NotificationBuilder.aNotification()
                         .withAmount(helloAssoPayment.getAmount().getTotal())
                         .withDate(helloAssoPayment.getDate())
@@ -235,10 +247,15 @@ public class HelloAssoService {
                         .withName(helloAssoPayment.getPayer().getLastName())
                         .withFormSlug(helloAssoPayment.getOrder().getFormSlug())
                         .withId(helloAssoPayment.getId())
+                        .withCodePostal(extraFields.get(CODE_POSTAL))
+                        .withEntrepriseProjet(extraFields.get(ENTREPRISE))
+                        .withTarif(extraFields.get(TARIF))
                         .build();
+                LOGGER.info("notification built : {} ",notification);
             } else if (helloAssoPaymentNotification.getEventType().equals("Order")) {
                 // both a payment and an order notifications are sent, only process one
                 LOGGER.debug("do not prcess order, in order to avoid double credit");
+                LOGGER.info("contenu d'un order : {}", helloAssoPaymentNotification);
                 end.put(false, null);
                 return end;
             } else {
@@ -270,6 +287,7 @@ public class HelloAssoService {
         end.put(true, notification);
         return end;
     }
+
     private String formatDate(String date) {
         final LocalDateTime dateTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
