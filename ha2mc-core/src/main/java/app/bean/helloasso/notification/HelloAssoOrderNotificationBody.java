@@ -12,8 +12,10 @@ public class HelloAssoOrderNotificationBody {
     private List<HelloAssoOrderItem> items;
     private HelloAssoPayer payer;
     private HelloAssoAmount amount;
-    private int id;
+    private String id;
     private String date;
+    private String formSlug;
+    private String state;
 
     public HelloAssoOrderNotificationBody() {
     }
@@ -42,11 +44,11 @@ public class HelloAssoOrderNotificationBody {
         this.amount = amount;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -56,6 +58,22 @@ public class HelloAssoOrderNotificationBody {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getFormSlug() {
+        return formSlug;
+    }
+
+    public void setFormSlug(String formSlug) {
+        this.formSlug = formSlug;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     @Override

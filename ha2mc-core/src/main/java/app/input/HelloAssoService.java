@@ -3,6 +3,7 @@ package app.input;
 import app.bean.Notification;
 import app.bean.XlsxModel;
 import app.bean.helloasso.*;
+import app.bean.helloasso.notification.HelloAssoOrderNotificationBody;
 import app.bean.helloasso.notification.HelloAssoPaymentNotification;
 import app.bean.helloasso.notification.HelloAssoPaymentNotificationBody;
 import app.process.ConvertService;
@@ -188,6 +189,7 @@ public class HelloAssoService {
                 .toEntity(HelloAssoOrder.class)
                 .block();
         if (orderResponse != null && orderResponse.getStatusCode().is2xxSuccessful() && orderResponse.getBody() != null) {
+            LOGGER.info("response order : {}", orderResponse);
             final List<HelloAssoOrderItem> items = orderResponse.getBody().getItems();
             extraFields = extractItemFromOrder(items);
         }
@@ -228,7 +230,8 @@ public class HelloAssoService {
             return end;
         }
         ObjectMapper objectMapper = new ObjectMapper();
-        HelloAssoPaymentNotificationBody helloAssoPayment;
+        HelloAssoPaymentNotificationBody helloAssoPayment = null;
+        HelloAssoOrderNotificationBody helloAssoPaymentNotif = null;
         Notification notification;
         try {
             if (helloAssoPaymentNotification.getEventType().equals("Payment")) {
@@ -251,13 +254,31 @@ public class HelloAssoService {
                         .withEntrepriseProjet(extraFields.get(ENTREPRISE))
                         .withTarif(extraFields.get(TARIF))
                         .build();
-                LOGGER.info("notification built : {} ",notification);
+                LOGGER.info("notification built : {} ", notification);
             } else if (helloAssoPaymentNotification.getEventType().equals("Order")) {
                 // both a payment and an order notifications are sent, only process one
                 LOGGER.debug("do not prcess order, in order to avoid double credit");
                 LOGGER.info("contenu d'un order : {}", helloAssoPaymentNotification);
-                end.put(false, null);
-                return end;
+                byte[] json = objectMapper.writeValueAsBytes(helloAssoPaymentNotification.getData());
+                helloAssoPaymentNotif = objectMapper.readValue(json, HelloAssoOrderNotificationBody.class);
+                final List<HelloAssoOrderItem> items = helloAssoPaymentNotif.getItems();
+                Map<String, String> extraFields = extractItemFromOrder(items);
+                LOGGER.info("extra fields from payment notif : {}", extraFields);
+                notification = Notification.NotificationBuilder.aNotification()
+                        .withAmount(helloAssoPaymentNotif.getAmount().getTotal())
+                        .withDate(helloAssoPaymentNotif.getDate())
+                        .withEmail(helloAssoPaymentNotif.getPayer().getEmail())
+                        .withFirstName(helloAssoPaymentNotif.getPayer().getFirstName())
+                        .withName(helloAssoPaymentNotif.getPayer().getLastName())
+                        .withFormSlug(helloAssoPaymentNotif.getFormSlug())
+                        .withId(helloAssoPaymentNotif.getId())
+                        .withCodePostal(extraFields.get(CODE_POSTAL))
+                        .withEntrepriseProjet(extraFields.get(ENTREPRISE))
+                        .withTarif(extraFields.get(TARIF))
+                        .build();
+
+                // end.put(false, null);
+                //   return end;
             } else {
                 LOGGER.error("Error during event type choice : {}", helloAssoPaymentNotification);
                 end.put(false, null);
@@ -283,7 +304,9 @@ public class HelloAssoService {
         // convert date to an easier format to read for human
         String dateWithEasyToReadFormat = formatDate(notification.getDate());
         notification.setDate(dateWithEasyToReadFormat);
-        notification.setState(helloAssoPayment.getState());
+        if (helloAssoPayment != null) notification.setState(helloAssoPayment.getState());
+        if (helloAssoPaymentNotif != null) notification.setState(helloAssoPaymentNotif.getState());
+
         end.put(true, notification);
         return end;
     }

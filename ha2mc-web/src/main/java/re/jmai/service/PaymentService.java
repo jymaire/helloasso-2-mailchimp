@@ -86,6 +86,9 @@ public class PaymentService {
             // register payment in database (convert cent to euro)
             HelloAssoPaymentEntity payment = new HelloAssoPaymentEntity(notification.getId(), notification.getDate(), (float) notification.getAmount() / 100,
                     notification.getFirstName(), notification.getName(), notification.getEmail());
+            payment.setCodePostal(notification.getCodePostal());
+            payment.setEntrepriseProjet(notification.getEntrepriseProjet());
+            payment.setTarif(notification.getTarif());
             HelloAssoPaymentEntity paymentSaved = paymentRepository.save(payment);
 
             if ("true".equals(configurationRepository.findById(PAYMENT_AUTOMATIC_ENABLED).orElse(new Configuration(PAYMENT_AUTOMATIC_ENABLED, "false")).getValue())) {

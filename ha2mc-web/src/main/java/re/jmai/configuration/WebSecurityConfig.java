@@ -58,7 +58,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     @Override
     public UserDetailsService userDetailsService() {
-        System.out.println(users + passwordsAsString);
         List<String> logins = Arrays.asList(users.split(","));
         List<String> passwords = Arrays.asList(passwordsAsString.split(","));
         Set<UserDetails> userDetails = new HashSet<>();
