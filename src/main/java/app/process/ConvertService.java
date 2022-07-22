@@ -62,14 +62,14 @@ public class ConvertService {
                     }
                     csvMailChimpModel.setEmail(xlsxModel.getEmail().stripTrailing());
                     mailChimpMember.setEmail_address(xlsxModel.getEmail().stripTrailing());
-                    mailChimpMember.setEmailType("html");
+                    mailChimpMember.setEmail_type("html");
                     if (xlsxModel.getCodePostal() != null) {
                         csvMailChimpModel.setCodePostal(xlsxModel.getCodePostal().substring(0, 5));
                         mergeFields.put("CP", xlsxModel.getCodePostal().substring(0, 5));
                     }
                     csvMailChimpModel.setEntrepriseProjet(xlsxModel.getEntrepriseProjet());
                     mergeFields.put("MMERGE3", xlsxModel.getEntrepriseProjet());
-                    mailChimpMember.setMergeFields(mergeFields);
+                    mailChimpMember.setMerge_fields(mergeFields);
                     mailChimpMember.setStatus("subscribed");
                     mailChimpMembers.add(mailChimpMember);
                     csvMailChimpModels.add(csvMailChimpModel);
