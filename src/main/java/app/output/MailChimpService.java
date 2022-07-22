@@ -19,6 +19,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -34,7 +35,11 @@ public class MailChimpService {
             LOGGER.info("member to post : {}", mailChimpMember);
             Object postResponse = addOneMember(mailChimpMember);
             results.add(postResponse);
-            LOGGER.debug(postResponse.toString());
+            if (postResponse != null) {
+                LOGGER.debug(postResponse.toString());
+            } else {
+                LOGGER.debug("postresponse is null");
+            }
         }
 
         return results.toString();
@@ -54,8 +59,8 @@ public class MailChimpService {
             if (isMemberPresent) {
                 MailChimpMemberUpdate mailChimpMemberUpdate = MailChimpMemberUpdate.MailChimpMemberUpdateBuilder.aMailChimpMemberUpdate()
                         .withEmail(newMember.getEmail_address())
-                        .withEmailType(newMember.getEmailType())
-                        .withMergeFields(newMember.getMergeFields())
+                        .withEmailType(newMember.getEmail_type())
+                        .withMergeFields(newMember.getMerge_fields())
                         .withStatus(newMember.getStatus())
                         .withStatusIfNew("subscribed")
                         .build();
@@ -125,6 +130,12 @@ public class MailChimpService {
     }
 
     private Object createMember(MailChimpMember newMember, HttpClient httpClient) {
+        // bug ici ?
+        if (newMember.getMerge_fields().get("MMERGE3") == null) {
+            HashMap<String, Object> merge_fields = newMember.getMerge_fields();
+            merge_fields.remove("MMERGE3");
+            newMember.setMerge_fields(merge_fields);
+        }
         Object postResponse = WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(httpClient)).build().post()
                 .uri(MainWindow.properties.getProperty("MAIL_CHIMP_API_URL") + "lists/" + MainWindow.properties.getProperty("MAIL_CHIMP_LIST_ID") + "/members")
