@@ -8,20 +8,20 @@ public class MailChimpMember {
     @JsonProperty("email_address")
     private String email_address;
     @JsonProperty("email_type")
-    private String emailType;
+    private String email_type;
     @JsonProperty("status")
     private String status;
 
     @JsonProperty("merge_fields")
-    private HashMap<String, Object> mergeFields;
+    private HashMap<String, Object> merge_fields;
 
 
-    public String getEmailType() {
-        return emailType;
+    public String getEmail_type() {
+        return email_type;
     }
 
-    public void setEmailType(String emailType) {
-        this.emailType = emailType;
+    public void setEmail_type(String email_type) {
+        this.email_type = email_type;
     }
 
     public String getEmail_address() {
@@ -40,21 +40,21 @@ public class MailChimpMember {
         this.status = status;
     }
 
-    public HashMap<String, Object> getMergeFields() {
-        return mergeFields;
+    public HashMap<String, Object> getMerge_fields() {
+        return merge_fields;
     }
 
-    public void setMergeFields(HashMap<String, Object> mergeFields) {
-        this.mergeFields = mergeFields;
+    public void setMerge_fields(HashMap<String, Object> merge_fields) {
+        this.merge_fields = merge_fields;
     }
 
     @Override
     public String toString() {
         return "MailChimpMember{" +
                 "email='" + email_address + '\'' +
-                ", emailType='" + emailType + '\'' +
+                ", email_type='" + email_type + '\'' +
                 ", status='" + status + '\'' +
-                ", mergeFields=" + mergeFields +
+                ", merge_fields=" + merge_fields +
                 '}';
     }
 }
