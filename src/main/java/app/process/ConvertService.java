@@ -79,6 +79,7 @@ public class ConvertService {
                     csvMailChimpModel.setEmail(xlsxModel.getEmail().stripTrailing());
                     mailChimpMember.setEmail_address(xlsxModel.getEmail().stripTrailing());
                     mailJetContact.setEmail(xlsxModel.getEmail().stripTrailing());
+                    mailJetContactMetadata.getListOfMmetadata().put("email",xlsxModel.getEmail().stripTrailing());
 
                     mailChimpMember.setEmail_type("html");
                     if (xlsxModel.getCodePostal() != null) {

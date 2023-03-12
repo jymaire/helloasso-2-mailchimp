@@ -8,14 +8,14 @@ import com.mailjet.client.MailjetRequest;
 import com.mailjet.client.MailjetResponse;
 import com.mailjet.client.errors.MailjetException;
 import com.mailjet.client.resource.Contact;
+import com.mailjet.client.resource.Contactdata;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -54,10 +54,28 @@ public class MailJetService {
         // ajouter "depuis" avec année en cours comme valeur
         boolean memberAddedSuccessfully = false;
         try {
-            String emailHash = "";
-            emailHash = commuteEmailHash(contact.getEmail().toLowerCase());
             boolean isMemberPresent = isMemberPresent(contact.getEmail());
-            System.out.println(isMemberPresent);
+            LOGGER.info("Member already there ? {}", isMemberPresent);
+            if (!isMemberPresent) {
+                MailjetRequest addUserRequest = new MailjetRequest(Contact.resource)
+                        .property(Contact.ISEXCLUDEDFROMCAMPAIGNS, "false")
+                        .property(Contact.NAME, contact.getEmail())
+                        .property(Contact.EMAIL, contact.getEmail());
+                final MailjetResponse contactCreationResponse = mailJetClientService.getMailJetClient().post(addUserRequest);
+                addMetadata(metadata, true);
+            } else {
+                addMetadata(metadata, false);
+            }
+            // ajout à la liste de contact
+            final MailjetRequest addToListRequet = new MailjetRequest(Contact.resource, MainWindow.properties.getProperty("MAIL_JET_LIST_ADHESION"))
+                    .property(Contact.ISEXCLUDEDFROMCAMPAIGNS, "true")
+                    .property(Contact.NAME, "New Contact");
+
+            final MailjetResponse addToContactListResponse = mailJetClientService.getMailJetClient().put(addToListRequet);
+            System.out.println(addToContactListResponse);
+        } catch (MailjetException ex) {
+            throw new RuntimeException(ex);
+
         } catch (Exception e) {
             LOGGER.error("Une erreur est apparu : {}", e.getMessage());
             return null;
@@ -75,6 +93,44 @@ public class MailJetService {
         return null;
     }
 
+    private boolean addMetadata(MailJetContactMetadata metadata, boolean creationOfUser) throws MailjetException {
+        boolean resultFinal = true;
+        resultFinal = resultFinal && extracted(metadata, "nom");
+        resultFinal = resultFinal && extracted(metadata, "prénom");
+        resultFinal = resultFinal && extracted(metadata, "date");
+        resultFinal = resultFinal && extracted(metadata, "formule");
+        resultFinal = resultFinal && extracted(metadata, "postal");
+        if (creationOfUser) {
+            MailjetRequest metadataCreationRequest = new MailjetRequest(Contactdata.resource, metadata.getListOfMmetadata().get("email"))
+                    .property(Contactdata.DATA, new JSONArray()
+                            .put(new JSONObject()
+                                    .put("Name", "depuis")
+                                    .put("Value", Year.now())
+                            )
+                    );
+            mailJetClientService.getMailJetClient().put(metadataCreationRequest);
+        }
+        return resultFinal;
+
+    }
+
+    private boolean extracted(MailJetContactMetadata metadata, String propertyName) throws MailjetException {
+        MailjetRequest metadataCreationRequest = new MailjetRequest(Contactdata.resource, metadata.getListOfMmetadata().get("email"))
+                .property(Contactdata.DATA, new JSONArray()
+                        .put(new JSONObject()
+                                .put("Name", propertyName)
+                                .put("Value", metadata.getListOfMmetadata().get(propertyName))
+                        )
+                );
+        final MailjetResponse metatadataReturn = mailJetClientService.getMailJetClient().put(metadataCreationRequest);
+        if (metatadataReturn.getStatus() == 201) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
     private boolean isMemberPresent(String emailHash) throws MailjetException {
         MailjetRequest request = new MailjetRequest(Contact.resource)
                 .filter(Contact.EMAIL, emailHash);
@@ -85,27 +141,5 @@ public class MailJetService {
         } else {
             return true;
         }
-    }
-
-
-    private String commuteEmailHash(String email) {
-        String hashtext = "";
-        try {
-            byte[] digest;
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(email.getBytes("UTF-8"));
-            digest = md.digest();
-            BigInteger bigInt = new BigInteger(1, digest);
-            hashtext = bigInt.toString(16);
-            while (hashtext.length() < 32) {
-                hashtext = "0" + hashtext;
-            }
-            LOGGER.debug("email hash : {}", hashtext);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-        return hashtext;
     }
 }
