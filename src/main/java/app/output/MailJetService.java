@@ -63,7 +63,7 @@ public class MailJetService {
                     .property(Contact.EMAIL, contact.getEmail());
             boolean creationOfUser = true;
             try {
-                final MailjetResponse contactCreationResponse = mailJetClientService.getMailJetClient().post(addUserRequest);
+               mailJetClientService.getMailJetClient().post(addUserRequest);
 
             } catch (MailjetClientRequestException e) {
                 creationOfUser = false;
@@ -71,16 +71,13 @@ public class MailJetService {
 
             addMetadata(metadata, creationOfUser);
 
-
             // ajout à la liste de contact
             final MailjetRequest addToListRequet = new MailjetRequest(ContactslistManageContact.resource, MainWindow.properties.getProperty("MAIL_JET_LIST_ADHESION"))
-                    //.property(ContactslistManageContact.NAME, "John Smith")
                     .property(ContactslistManageContact.PROPERTIES, "object")
                     .property(ContactslistManageContact.ACTION, "addnoforce")
                     .property(ContactslistManageContact.EMAIL, contact.getEmail());
 
             final MailjetResponse addToContactListResponse = mailJetClientService.getMailJetClient().post(addToListRequet);
-            System.out.println(addToContactListResponse);
         } catch (MailjetException ex) {
             throw new RuntimeException(ex);
 
