@@ -43,6 +43,7 @@ public class ConvertService {
     public void convert(String outputPath, List<XlsxModel> xlsxModels) {
         List<CsvMailChimpModel> csvMailChimpModels = new ArrayList<>();
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter dateFormatMailJet = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
         List<MailChimpMember> mailChimpMembers = new ArrayList<>();
         // Key is the email
         Map<String, MailJetContact> mailJetContactMap = new HashMap();
@@ -73,7 +74,7 @@ public class ConvertService {
                     if (xlsxModel.getDate() != null) {
                         csvMailChimpModel.setDate(xlsxModel.getDate().format(dateFormat));
                         mergeFields.put("DATELASTAD", xlsxModel.getDate().format(dateFormat));
-                        mailJetContactMetadata.getListOfMmetadata().put("date",xlsxModel.getDate().format(dateFormat));
+                        mailJetContactMetadata.getListOfMmetadata().put("date",xlsxModel.getDate().format(dateFormatMailJet));
 
                     }
                     csvMailChimpModel.setEmail(xlsxModel.getEmail().stripTrailing());

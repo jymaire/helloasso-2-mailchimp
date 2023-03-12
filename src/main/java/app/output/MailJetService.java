@@ -6,9 +6,11 @@ import app.model.mailchimp.MailJetContactMetadata;
 import app.service.MailJetClientService;
 import com.mailjet.client.MailjetRequest;
 import com.mailjet.client.MailjetResponse;
+import com.mailjet.client.errors.MailjetClientRequestException;
 import com.mailjet.client.errors.MailjetException;
 import com.mailjet.client.resource.Contact;
 import com.mailjet.client.resource.Contactdata;
+import com.mailjet.client.resource.ContactslistManageContact;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -37,6 +39,7 @@ public class MailJetService {
         for (String email : mailJetContactMap.keySet()) {
             LOGGER.info("member to post : {}", mailJetContactMap.get(email));
             LOGGER.info("member to post : {}", mailJetContactMetadataMap.get(email));
+
             Object postResponse = addOneMember(mailJetContactMap.get(email), mailJetContactMetadataMap.get(email));
             results.add(postResponse);
             if (postResponse != null) {
@@ -54,24 +57,29 @@ public class MailJetService {
         // ajouter "depuis" avec année en cours comme valeur
         boolean memberAddedSuccessfully = false;
         try {
-            boolean isMemberPresent = isMemberPresent(contact.getEmail());
-            LOGGER.info("Member already there ? {}", isMemberPresent);
-            if (!isMemberPresent) {
-                MailjetRequest addUserRequest = new MailjetRequest(Contact.resource)
-                        .property(Contact.ISEXCLUDEDFROMCAMPAIGNS, "false")
-                        .property(Contact.NAME, contact.getEmail())
-                        .property(Contact.EMAIL, contact.getEmail());
+            MailjetRequest addUserRequest = new MailjetRequest(Contact.resource)
+                    .property(Contact.ISEXCLUDEDFROMCAMPAIGNS, "false")
+                    .property(Contact.NAME, contact.getEmail())
+                    .property(Contact.EMAIL, contact.getEmail());
+            boolean creationOfUser = true;
+            try {
                 final MailjetResponse contactCreationResponse = mailJetClientService.getMailJetClient().post(addUserRequest);
-                addMetadata(metadata, true);
-            } else {
-                addMetadata(metadata, false);
-            }
-            // ajout à la liste de contact
-            final MailjetRequest addToListRequet = new MailjetRequest(Contact.resource, MainWindow.properties.getProperty("MAIL_JET_LIST_ADHESION"))
-                    .property(Contact.ISEXCLUDEDFROMCAMPAIGNS, "true")
-                    .property(Contact.NAME, "New Contact");
 
-            final MailjetResponse addToContactListResponse = mailJetClientService.getMailJetClient().put(addToListRequet);
+            } catch (MailjetClientRequestException e) {
+                creationOfUser = false;
+            }
+
+            addMetadata(metadata, creationOfUser);
+
+
+            // ajout à la liste de contact
+            final MailjetRequest addToListRequet = new MailjetRequest(ContactslistManageContact.resource, MainWindow.properties.getProperty("MAIL_JET_LIST_ADHESION"))
+                    //.property(ContactslistManageContact.NAME, "John Smith")
+                    .property(ContactslistManageContact.PROPERTIES, "object")
+                    .property(ContactslistManageContact.ACTION, "addnoforce")
+                    .property(ContactslistManageContact.EMAIL, contact.getEmail());
+
+            final MailjetResponse addToContactListResponse = mailJetClientService.getMailJetClient().post(addToListRequet);
             System.out.println(addToContactListResponse);
         } catch (MailjetException ex) {
             throw new RuntimeException(ex);
@@ -93,13 +101,12 @@ public class MailJetService {
         return null;
     }
 
-    private boolean addMetadata(MailJetContactMetadata metadata, boolean creationOfUser) throws MailjetException {
-        boolean resultFinal = true;
-        resultFinal = resultFinal && extracted(metadata, "nom");
-        resultFinal = resultFinal && extracted(metadata, "prénom");
-        resultFinal = resultFinal && extracted(metadata, "date");
-        resultFinal = resultFinal && extracted(metadata, "formule");
-        resultFinal = resultFinal && extracted(metadata, "postal");
+    private void addMetadata(MailJetContactMetadata metadata, boolean creationOfUser) throws MailjetException {
+        extracted(metadata, "nom");
+        extracted(metadata, "prénom");
+        extracted(metadata, "date");
+        extracted(metadata, "formule");
+        extracted(metadata, "postal");
         if (creationOfUser) {
             MailjetRequest metadataCreationRequest = new MailjetRequest(Contactdata.resource, metadata.getListOfMmetadata().get("email"))
                     .property(Contactdata.DATA, new JSONArray()
@@ -110,8 +117,6 @@ public class MailJetService {
                     );
             mailJetClientService.getMailJetClient().put(metadataCreationRequest);
         }
-        return resultFinal;
-
     }
 
     private boolean extracted(MailJetContactMetadata metadata, String propertyName) throws MailjetException {
